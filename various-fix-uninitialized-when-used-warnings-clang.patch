@@ -1,0 +1,213 @@
+From 4813a5210f6fb979d8f7a592f71a2f9c4d3db179 Mon Sep 17 00:00:00 2001
+From: Sami Kerola <kerolasa@iki.fi>
+Date: Sat, 9 Feb 2019 09:34:52 +0000
+Subject: [PATCH 647/686] various: fix 'uninitialized when used' warnings
+ [clang]
+
+This change fixes "warning: variable 'var' may be uninitialized when used
+here [-Wconditional-uninitialized]" warnings reported in various files.
+
+Signed-off-by: Sami Kerola <kerolasa@iki.fi>
+---
+ disk-utils/mkfs.minix.c              | 2 +-
+ disk-utils/sfdisk.c                  | 2 +-
+ libblkid/src/partitions/dos.c        | 2 +-
+ libblkid/src/partitions/partitions.c | 2 +-
+ libblkid/src/superblocks/ddf_raid.c  | 2 +-
+ libblkid/src/superblocks/hfs.c       | 2 +-
+ libblkid/src/superblocks/zfs.c       | 2 +-
+ libfdisk/src/dos.c                   | 2 +-
+ libfdisk/src/table.c                 | 2 +-
+ misc-utils/logger.c                  | 2 +-
+ misc-utils/uuidd.c                   | 3 ++-
+ misc-utils/uuidparse.c               | 2 +-
+ sys-utils/hwclock.c                  | 2 +-
+ sys-utils/readprofile.c              | 2 +-
+ 14 files changed, 15 insertions(+), 14 deletions(-)
+
+diff --git a/disk-utils/mkfs.minix.c b/disk-utils/mkfs.minix.c
+index 54c47da..8e6811f 100644
+--- a/disk-utils/mkfs.minix.c
++++ b/disk-utils/mkfs.minix.c
+@@ -685,7 +685,7 @@ static int find_super_magic(const struct fs_control *ctl)
+ 
+ static void determine_device_blocks(struct fs_control *ctl, const struct stat *statbuf)
+ {
+-	unsigned long long dev_blocks;
++	unsigned long long dev_blocks = 0;
+ 
+ 	if (S_ISBLK(statbuf->st_mode)) {
+ 		int sectorsize;
+diff --git a/disk-utils/sfdisk.c b/disk-utils/sfdisk.c
+index 9f03112..6b3717f 100644
+--- a/disk-utils/sfdisk.c
++++ b/disk-utils/sfdisk.c
+@@ -1717,7 +1717,7 @@ static int command_fdisk(struct sfdisk *sf, int argc, char **argv)
+ 
+ 		nparts = fdisk_table_get_nents(tb);
+ 		if (nparts) {
+-			size_t cur_partno;
++			size_t cur_partno = (size_t) -1;
+ 			struct fdisk_partition *pa = fdisk_table_get_partition(tb, nparts - 1);
+ 
+ 			assert(pa);
+diff --git a/libblkid/src/partitions/dos.c b/libblkid/src/partitions/dos.c
+index 659ca9a..6c1b519 100644
+--- a/libblkid/src/partitions/dos.c
++++ b/libblkid/src/partitions/dos.c
+@@ -55,7 +55,7 @@ static int parse_dos_extended(blkid_probe pr, blkid_parttable tab,
+ 
+ 	while (1) {
+ 		struct dos_partition *p, *p0;
+-		uint32_t start, size;
++		uint32_t start = 0, size;
+ 
+ 		if (++ct_nodata > 100)
+ 			return BLKID_PROBE_OK;
+diff --git a/libblkid/src/partitions/partitions.c b/libblkid/src/partitions/partitions.c
+index 83c3c4f..eabcf5d 100644
+--- a/libblkid/src/partitions/partitions.c
++++ b/libblkid/src/partitions/partitions.c
+@@ -1009,7 +1009,7 @@ blkid_partition blkid_partlist_get_partition_by_partno(blkid_partlist ls, int n)
+ blkid_partition blkid_partlist_devno_to_partition(blkid_partlist ls, dev_t devno)
+ {
+ 	struct sysfs_cxt sysfs;
+-	uint64_t start, size;
++	uint64_t start = 0, size;
+ 	int i, rc, partno = 0;
+ 
+ 	DBG(LOWPROBE, ul_debug("trying to convert devno 0x%llx to partition",
+diff --git a/libblkid/src/superblocks/ddf_raid.c b/libblkid/src/superblocks/ddf_raid.c
+index fc2c39d..0b82e73 100644
+--- a/libblkid/src/superblocks/ddf_raid.c
++++ b/libblkid/src/superblocks/ddf_raid.c
+@@ -78,7 +78,7 @@ static int probe_ddf(blkid_probe pr,
+ 	size_t i;
+ 	struct ddf_header *ddf = NULL;
+ 	char version[DDF_REV_LENGTH + 1];
+-	uint64_t off, lba;
++	uint64_t off = 0, lba;
+ 
+ 	if (pr->size < 0x30000)
+ 		return 1;
+diff --git a/libblkid/src/superblocks/hfs.c b/libblkid/src/superblocks/hfs.c
+index 7b01174..6f170a3 100644
+--- a/libblkid/src/superblocks/hfs.c
++++ b/libblkid/src/superblocks/hfs.c
+@@ -191,7 +191,7 @@ static int probe_hfsplus(blkid_probe pr, const struct blkid_idmag *mag)
+ 	unsigned int off = 0;
+ 	unsigned int blocksize;
+ 	unsigned int cat_block;
+-	unsigned int ext_block_start;
++	unsigned int ext_block_start = 0;
+ 	unsigned int ext_block_count;
+ 	unsigned int record_count;
+ 	unsigned int leaf_node_head;
+diff --git a/libblkid/src/superblocks/zfs.c b/libblkid/src/superblocks/zfs.c
+index ec3e1c5..60dca8e 100644
+--- a/libblkid/src/superblocks/zfs.c
++++ b/libblkid/src/superblocks/zfs.c
+@@ -218,7 +218,7 @@ static int probe_zfs(blkid_probe pr,
+ 	const struct blkid_idmag *mag  __attribute__((__unused__)))
+ {
+ 	int swab_endian = 0;
+-	struct zfs_uberblock *ub;
++	struct zfs_uberblock *ub = NULL;
+ 	loff_t offset = 0, ub_offset = 0;
+ 	int label_no, found = 0, found_in_label;
+ 	void *label;
+diff --git a/libfdisk/src/dos.c b/libfdisk/src/dos.c
+index 4178405..91b6cf4 100644
+--- a/libfdisk/src/dos.c
++++ b/libfdisk/src/dos.c
+@@ -1707,7 +1707,7 @@ static int dos_add_partition(struct fdisk_context *cxt,
+ 	} else {
+ 		char hint[BUFSIZ];
+ 		struct fdisk_ask *ask;
+-		int c;
++		int c = 0;
+ 
+ 		/* the default layout for scripts is to create primary partitions */
+ 		if (cxt->script || !fdisk_has_dialogs(cxt)) {
+diff --git a/libfdisk/src/table.c b/libfdisk/src/table.c
+index 4881db6..1cd37ab 100644
+--- a/libfdisk/src/table.c
++++ b/libfdisk/src/table.c
+@@ -720,7 +720,7 @@ int fdisk_diff_tables(struct fdisk_table *a, struct fdisk_table *b,
+ 		      struct fdisk_iter *itr,
+ 		      struct fdisk_partition **res, int *change)
+ {
+-	struct fdisk_partition *pa, *pb;
++	struct fdisk_partition *pa = NULL, *pb;
+ 	int rc = 1;
+ 
+ 	assert(itr);
+diff --git a/misc-utils/logger.c b/misc-utils/logger.c
+index ebdc56e..9f9287d 100644
+--- a/misc-utils/logger.c
++++ b/misc-utils/logger.c
+@@ -237,7 +237,7 @@ static int pencode(char *s)
+ 
+ static int unix_socket(struct logger_ctl *ctl, const char *path, int *socket_type)
+ {
+-	int fd, i, type = -1;
++	int fd = -1, i, type = -1;
+ 	static struct sockaddr_un s_addr;	/* AF_UNIX address of local logger */
+ 
+ 	if (strlen(path) >= sizeof(s_addr.sun_path))
+diff --git a/misc-utils/uuidd.c b/misc-utils/uuidd.c
+index 8b83d91..8d49147 100644
+--- a/misc-utils/uuidd.c
++++ b/misc-utils/uuidd.c
+@@ -311,7 +311,8 @@ static void server_loop(const char *socket_path, const char *pidfile_path,
+ 	uuid_t			uu;
+ 	char			reply_buf[1024], *cp;
+ 	char			op, str[UUID_STR_LEN];
+-	int			i, ns, len, num;
++	int			i, ns, len;
++	int                     num;            /* intentionally uninitialized */
+ 	int			s = 0;
+ 	int			fd_pidfile = -1;
+ 	int			ret;
+diff --git a/misc-utils/uuidparse.c b/misc-utils/uuidparse.c
+index 777f9db..6a13f2a 100644
+--- a/misc-utils/uuidparse.c
++++ b/misc-utils/uuidparse.c
+@@ -144,7 +144,7 @@ static void fill_table_row(struct libscols_table *tb, char const *const uuid)
+ 	size_t i;
+ 	uuid_t buf;
+ 	int invalid = 0;
+-	int variant, type;
++	int variant = -1, type = -1;
+ 
+ 	assert(tb);
+ 	assert(uuid);
+diff --git a/sys-utils/hwclock.c b/sys-utils/hwclock.c
+index b83e710..238e9f5 100644
+--- a/sys-utils/hwclock.c
++++ b/sys-utils/hwclock.c
+@@ -899,7 +899,7 @@ manipulate_clock(const struct hwclock_control *ctl, const time_t set_time,
+ 		 const struct timeval startup_time, struct adjtime *adjtime)
+ {
+ 	/* The time at which we read the Hardware Clock */
+-	struct timeval read_time;
++	struct timeval read_time = { 0 };
+ 	/*
+ 	 * The Hardware Clock gives us a valid time, or at
+ 	 * least something close enough to fool mktime().
+diff --git a/sys-utils/readprofile.c b/sys-utils/readprofile.c
+index 0350738..cf07502 100644
+--- a/sys-utils/readprofile.c
++++ b/sys-utils/readprofile.c
+@@ -136,7 +136,7 @@ int main(int argc, char **argv)
+ 	unsigned long long add0 = 0;
+ 	unsigned int step;
+ 	unsigned int *buf, total, fn_len;
+-	unsigned long long fn_add, next_add;	/* current and next address */
++	unsigned long long fn_add = 0, next_add;	/* current and next address */
+ 	char fn_name[S_LEN], next_name[S_LEN];	/* current and next name */
+ 	char mode[8];
+ 	int c;
+-- 
+1.8.3.1
+

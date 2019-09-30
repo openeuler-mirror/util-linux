@@ -1,0 +1,28 @@
+From 523de2ec6f41e5cfff31c99393c8d3b1a88a62bf Mon Sep 17 00:00:00 2001
+From: Sami Kerola <kerolasa@iki.fi>
+Date: Thu, 13 Dec 2018 22:12:26 +0000
+Subject: [PATCH 573/686] chmem: add initilizer [clang]
+
+warning: use of GNU empty initializer extension [-Wgnu-empty-initializer]
+
+Signed-off-by: Sami Kerola <kerolasa@iki.fi>
+---
+ sys-utils/chmem.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sys-utils/chmem.c b/sys-utils/chmem.c
+index 4a4439a..861f6cf 100644
+--- a/sys-utils/chmem.c
++++ b/sys-utils/chmem.c
+@@ -354,7 +354,7 @@ static void __attribute__((__noreturn__)) usage(void)
+ 
+ int main(int argc, char **argv)
+ {
+-	struct chmem_desc _desc = { }, *desc = &_desc;
++	struct chmem_desc _desc = { 0 }, *desc = &_desc;
+ 	int cmd = CMD_NONE, zone_id = -1;
+ 	char *zone = NULL;
+ 	int c, rc;
+-- 
+1.8.3.1
+

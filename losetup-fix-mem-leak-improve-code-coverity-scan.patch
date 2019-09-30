@@ -1,0 +1,37 @@
+From 9c6af25c31540f8310bb6f4e6dbb5621b89053a3 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Wed, 25 Jul 2018 11:56:44 +0200
+Subject: [PATCH 311/686] losetup: fix mem leak, improve code [coverity scan]
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ sys-utils/losetup.c | 6 ++++--
+ 1 file changed, 4 insertions(+), 2 deletions(-)
+
+diff --git a/sys-utils/losetup.c b/sys-utils/losetup.c
+index 7525d84..7d14f56 100644
+--- a/sys-utils/losetup.c
++++ b/sys-utils/losetup.c
+@@ -141,8 +141,7 @@ static int printf_loopdev(struct loopdev_cxt *lc)
+ 
+ 		if (loopcxt_get_sizelimit(lc, &x) == 0 && x)
+ 				printf(_(", sizelimit %ju"), x);
+-		printf("\n");
+-		return 0;
++		goto done;
+ 	}
+ 
+ 	printf("%s: [%04d]:%" PRIu64 " (%s)",
+@@ -162,6 +161,9 @@ static int printf_loopdev(struct loopdev_cxt *lc)
+ 		if (e && *e)
+ 			printf(_(", encryption %s (type %u)"), e, type);
+ 	}
++
++done:
++	free(fname);
+ 	printf("\n");
+ 	return 0;
+ }
+-- 
+1.8.3.1
+

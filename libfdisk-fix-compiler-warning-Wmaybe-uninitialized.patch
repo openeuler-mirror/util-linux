@@ -1,0 +1,36 @@
+From b9144a43c03d8ed961c889d9bd113838ac8643ea Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Wed, 18 Jul 2018 10:00:18 +0200
+Subject: [PATCH 277/686] libfdisk: fix compiler warning
+ [-Wmaybe-uninitialized]
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ libfdisk/src/gpt.c | 4 ++--
+ 1 file changed, 2 insertions(+), 2 deletions(-)
+
+diff --git a/libfdisk/src/gpt.c b/libfdisk/src/gpt.c
+index aa544f6..4d34ca7 100644
+--- a/libfdisk/src/gpt.c
++++ b/libfdisk/src/gpt.c
+@@ -945,7 +945,7 @@ static ssize_t read_lba(struct fdisk_context *cxt, uint64_t lba,
+ static unsigned char *gpt_read_entries(struct fdisk_context *cxt,
+ 					 struct gpt_header *header)
+ {
+-	size_t sz;
++	size_t sz = 0;
+ 	ssize_t ssz;
+ 
+ 	unsigned char *ret = NULL;
+@@ -1971,7 +1971,7 @@ static int gpt_write_partitions(struct fdisk_context *cxt,
+ 				struct gpt_header *header, unsigned char *ents)
+ {
+ 	off_t offset = (off_t) le64_to_cpu(header->partition_entry_lba) * cxt->sector_size;
+-	size_t towrite;
++	size_t towrite = 0;
+ 	ssize_t ssz;
+ 	int rc;
+ 
+-- 
+1.8.3.1
+

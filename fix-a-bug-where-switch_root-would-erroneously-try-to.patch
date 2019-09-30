@@ -1,0 +1,29 @@
+From 9737a1671117e2d8ade95cd46df2c0787d9266cd Mon Sep 17 00:00:00 2001
+From: Paul Asmuth <paul@asmuth.com>
+Date: Fri, 9 Nov 2018 17:02:11 +0100
+Subject: [PATCH 470/686] fix a bug where switch_root would erroneously try to
+ parse initargs
+
+before this change, switch_root would try to parse all arguments,
+including 'initargs', using getopt, which would lead to an 'unrecognized
+option' error when trying to pass a flag to the init program
+---
+ sys-utils/switch_root.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/sys-utils/switch_root.c b/sys-utils/switch_root.c
+index 3c66d01..a85ce24 100644
+--- a/sys-utils/switch_root.c
++++ b/sys-utils/switch_root.c
+@@ -227,7 +227,7 @@ int main(int argc, char *argv[])
+ 
+ 	atexit(close_stdout);
+ 
+-	while ((c = getopt_long(argc, argv, "Vh", longopts, NULL)) != -1)
++	while ((c = getopt_long(argc, argv, "+Vh", longopts, NULL)) != -1)
+ 		switch (c) {
+ 		case 'V':
+ 			printf(UTIL_LINUX_VERSION);
+-- 
+1.8.3.1
+

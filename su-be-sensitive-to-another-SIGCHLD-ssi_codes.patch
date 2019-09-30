@@ -1,0 +1,31 @@
+From 5932ef81deb0b823ffa52bc6206cdd3c583bb4e9 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Wed, 6 Mar 2019 12:02:30 +0100
+Subject: [PATCH] su: be sensitive to another SIGCHLD ssi_codes
+
+See the same issue for script: 27afe5016842c22d256ea9f88b598d637ca0df84
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ login-utils/su-common.c | 5 ++++-
+ 1 file changed, 4 insertions(+), 1 deletion(-)
+
+diff --git a/login-utils/su-common.c b/login-utils/su-common.c
+index bf4a47126..1662d21bb 100644
+--- a/login-utils/su-common.c
++++ b/login-utils/su-common.c
+@@ -437,7 +437,10 @@ static int pty_handle_signal(struct su_context *su, int fd)
+ 
+ 		/* The child terminated or stopped. Note that we ignore SIGCONT
+ 		 * here, because stop/cont semantic is handled by wait_for_child() */
+-		if (info.ssi_code == CLD_EXITED || info.ssi_status == SIGSTOP)
++		if (info.ssi_code == CLD_EXITED
++		    || info.ssi_code == CLD_KILLED
++		    || info.ssi_code == CLD_DUMPED
++		    || info.ssi_status == SIGSTOP)
+ 			wait_for_child(su);
+ 		/* The child is dead, force poll() timeout. */
+ 		if (su->child == (pid_t) -1)
+-- 
+2.19.1
+

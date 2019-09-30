@@ -1,0 +1,29 @@
+From 1741d2ea572be01899107bd171d4e8a3e50c73d9 Mon Sep 17 00:00:00 2001
+From: Milan Broz <gmazyland@gmail.com>
+Date: Wed, 7 Nov 2018 12:48:37 +0100
+Subject: [PATCH 466/686] libblkid: fix detection of dm-integrity superblock
+
+Some new features in Linux kernel 4.19 for dm-integrity use metadata
+format version 2, patch adds it to detection.
+
+Signed-off-by: Milan Broz <gmazyland@gmail.com>
+---
+ libblkid/src/superblocks/lvm.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libblkid/src/superblocks/lvm.c b/libblkid/src/superblocks/lvm.c
+index 17731a8..c7e456f 100644
+--- a/libblkid/src/superblocks/lvm.c
++++ b/libblkid/src/superblocks/lvm.c
+@@ -193,7 +193,7 @@ static int probe_integrity(blkid_probe pr, const struct blkid_idmag *mag)
+ 	if (sb == NULL)
+ 		return errno ? -errno : 1;
+ 
+-	if (sb->version != 1)
++	if (sb->version !=1 && sb->version != 2)
+ 		return 1;
+ 
+ 	blkid_probe_sprintf_version(pr, "%u", sb->version);
+-- 
+1.8.3.1
+

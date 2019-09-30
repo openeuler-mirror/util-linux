@@ -1,0 +1,29 @@
+From b22332dd4f0042e9fc7248aa918b991d684d8f28 Mon Sep 17 00:00:00 2001
+From: Sami Kerola <kerolasa@iki.fi>
+Date: Sun, 13 Jan 2019 19:48:59 +0000
+Subject: [PATCH 590/686] last: fix wtmp user name buffer overflow [asan]
+
+Ensure utmp user name field is null terminated.  Without that getpwnam() can
+buffer overflow, when wtmp file is malformed.
+
+Addresses: https://github.com/karelzak/util-linux/issues/715
+Signed-off-by: Sami Kerola <kerolasa@iki.fi>
+---
+ login-utils/last.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/login-utils/last.c b/login-utils/last.c
+index 6b25efd..be744b0 100644
+--- a/login-utils/last.c
++++ b/login-utils/last.c
+@@ -600,6 +600,7 @@ static int is_phantom(const struct last_control *ctl, struct utmpx *ut)
+ 
+ 	if (ut->ut_tv.tv_sec < ctl->boot_time.tv_sec)
+ 		return 1;
++	ut->ut_user[__UT_NAMESIZE - 1] = '\0';
+ 	pw = getpwnam(ut->ut_user);
+ 	if (!pw)
+ 		return 1;
+-- 
+1.8.3.1
+

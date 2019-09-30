@@ -1,0 +1,26 @@
+From 27ea4deb93a15e701d1a1fd791f70677c579b947 Mon Sep 17 00:00:00 2001
+From: Sami Kerola <kerolasa@iki.fi>
+Date: Thu, 5 Apr 2018 20:56:56 +0100
+Subject: [PATCH 036/686] bash-completion: fix typo in blockdev file
+
+Signed-off-by: Sami Kerola <kerolasa@iki.fi>
+---
+ bash-completion/blockdev | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/bash-completion/blockdev b/bash-completion/blockdev
+index 8050c0f..e7aca26 100644
+--- a/bash-completion/blockdev
++++ b/bash-completion/blockdev
+@@ -33,7 +33,7 @@ _blockdev_module()
+ 			COMPREPLY=( $(compgen -W "bytes" -- $cur) )
+ 			return 0
+ 			;;
+-		'--setbsz'|'--setfra')
++		'--setra'|'--setfra')
+ 			COMPREPLY=( $(compgen -W "sectors" -- $cur) )
+ 			return 0
+ 			;;
+-- 
+1.8.3.1
+

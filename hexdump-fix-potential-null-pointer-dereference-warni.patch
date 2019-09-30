@@ -1,0 +1,69 @@
+From 577bb86f5b0662ac81699580b55b5a4b11611f01 Mon Sep 17 00:00:00 2001
+From: Sami Kerola <kerolasa@iki.fi>
+Date: Mon, 10 Dec 2018 21:41:19 +0000
+Subject: [PATCH 557/686] hexdump: fix potential null pointer dereference
+ warnings
+
+First three fixes on lines 133, 151, and 280 are cosmetic.  Because there
+was unobvious null check compiler thought variable might be null, and warned
+when after pointer adjustment it was followed without null check.  Perhaps
+this will not happen sometime in future when compiler is made more smart,
+meanwhile lets give better hints to avoid false positive.
+
+The last change addresses issue that is possible, at least in theory.
+
+text-utils/hexdump-parse.c:465:12: warning: potential null pointer
+dereference [-Wnull-dereference]
+
+Signed-off-by: Sami Kerola <kerolasa@iki.fi>
+---
+ text-utils/hexdump-parse.c | 12 +++++++-----
+ 1 file changed, 7 insertions(+), 5 deletions(-)
+
+diff --git a/text-utils/hexdump-parse.c b/text-utils/hexdump-parse.c
+index 2b2735b..0b460a7 100644
+--- a/text-utils/hexdump-parse.c
++++ b/text-utils/hexdump-parse.c
+@@ -128,8 +128,8 @@ void add_fmt(const char *fmt, struct hexdump *hex)
+ 		/* If leading digit, repetition count. */
+ 		if (isdigit(*p)) {
+ 			savep = p;
+-			while (isdigit(*p) && ++p)
+-				;
++			while (isdigit(*p))
++				p++;
+ 			if (!isspace(*p) && *p != '/')
+ 				badfmt(fmt);
+ 			/* may overwrite either white space or slash */
+@@ -146,8 +146,8 @@ void add_fmt(const char *fmt, struct hexdump *hex)
+ 		/* byte count */
+ 		if (isdigit(*p)) {
+ 			savep = p;
+-			while (isdigit(*p) && ++p)
+-				;
++			while (isdigit(*p))
++				p++;
+ 			if (!isspace(*p))
+ 				badfmt(fmt);
+ 			tfu->bcnt = atoi(savep);
+@@ -261,7 +261,7 @@ void rewrite_rules(struct hexdump_fs *fs, struct hexdump *hex)
+ 			if (fu->bcnt) {
+ 				sokay = USEBCNT;
+ 				/* skip to conversion character */
+-				while (++p1 && strchr(spec, *p1))
++				for (p1++; strchr(spec, *p1); p1++)
+ 					;
+ 			} else {
+ 				/* skip any special chars, field width */
+@@ -462,6 +462,8 @@ isint:				cs[3] = '\0';
+ 				fu->reps += (hex->blocksize - fs->bcnt) / fu->bcnt;
+ 		if (fu->reps > 1 && !list_empty(&fu->prlist)) {
+ 			pr = list_last_entry(&fu->prlist, struct hexdump_pr, prlist);
++			if (!pr)
++				continue;
+ 			for (p1 = pr->fmt, p2 = NULL; *p1; ++p1)
+ 				p2 = isspace(*p1) ? p1 : NULL;
+ 			if (p2)
+-- 
+1.8.3.1
+

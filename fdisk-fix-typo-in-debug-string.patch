@@ -1,0 +1,26 @@
+From 36787f7a97c6797ffbd3905427f61f90eed30d56 Mon Sep 17 00:00:00 2001
+From: Vaclav Dolezal <vdolezal@redhat.com>
+Date: Tue, 29 Aug 2017 15:29:27 +0200
+Subject: [PATCH 100/686] fdisk: fix typo in debug string
+
+Signed-off-by: Vaclav Dolezal <vdolezal@redhat.com>
+---
+ disk-utils/fdisk.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/disk-utils/fdisk.c b/disk-utils/fdisk.c
+index 55af8dc..2126b4c 100644
+--- a/disk-utils/fdisk.c
++++ b/disk-utils/fdisk.c
+@@ -100,7 +100,7 @@ int get_user_reply(const char *prompt, char *buf, size_t bufsz)
+ 	size_t sz;
+ 	int ret = 0;
+ 
+-	DBG(ASK, ul_debug("asking for user replay %s", is_interactive ? "[interactive]" : ""));
++	DBG(ASK, ul_debug("asking for user reply %s", is_interactive ? "[interactive]" : ""));
+ 
+ 	sigemptyset(&act.sa_mask);
+ 	sigaction(SIGINT, &act, &oldact);
+-- 
+1.8.3.1
+

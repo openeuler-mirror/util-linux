@@ -1,0 +1,26 @@
+From 4850e972572179cef74143a09a03fbe7d745c6d8 Mon Sep 17 00:00:00 2001
+From: Noel Cragg <noel@squeezehead.com>
+Date: Thu, 29 Nov 2018 11:38:41 +0100
+Subject: [PATCH 488/686] mkswap: fix page size warning message
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ disk-utils/mkswap.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/disk-utils/mkswap.c b/disk-utils/mkswap.c
+index cbb99dc..28a139d 100644
+--- a/disk-utils/mkswap.c
++++ b/disk-utils/mkswap.c
+@@ -82,7 +82,7 @@ static void init_signature_page(struct mkswap_control *ctl)
+ 		if (ctl->user_pagesize != kernel_pagesize)
+ 			warnx(_("Using user-specified page size %d, "
+ 				"instead of the system value %d"),
+-				ctl->pagesize, kernel_pagesize);
++				ctl->user_pagesize, kernel_pagesize);
+ 		ctl->pagesize = ctl->user_pagesize;
+ 	} else
+ 		ctl->pagesize = kernel_pagesize;
+-- 
+1.8.3.1
+
