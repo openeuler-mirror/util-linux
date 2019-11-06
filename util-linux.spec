@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        %{_pre_version__}.1
-Release:        2
+Release:        3
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -228,9 +228,8 @@ fi
 
 %files -f %{name}.files
 %exclude %{compldir}/{mount,umount}
-%doc AUTHORS libblkid/COPYING
 %{!?_licensedir:%global license %%doc}
-%license Documentation/licenses/* {libfdisk,libsmartcols,libmount,libuuid}/COPYING
+%license Documentation/licenses/* AUTHORS libblkid/COPYING
 %config(noreplace) %{_sysconfdir}/pam.d/{login,remote,su,su-l,runuser,runuser-l,chfn,chsh}
 %config(noreplace) %{_prefix}/lib/udev/rules.d/60-raw.rules
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/adjtime
@@ -301,5 +300,11 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Thu Oct 10 2019 shenyangyang<shenyangyang4@huawei.com> - 2.32.1-3
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:modify license file
+
 * Sat Sep 21 2019 huzhiyu<huzhiyu1@huawei.com> - 2.32.1-2
 - Package init
