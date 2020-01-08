@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        %{_pre_version__}.1
-Release:        4
+Release:        5
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -68,6 +68,7 @@ Patch6026:      include-add-no-return-function-attribute.patch
 Patch6027:      agetty-Fix-input-of-non-ASCII-characters-in-get_logn.patch
 Patch6028:      script-be-sensitive-to-another-SIGCHLD-ssi_codes.patch
 Patch6029:      su-be-sensitive-to-another-SIGCHLD-ssi_codes.patch
+Patch6030:      fdisk-fix-quit-dialog-for-non-libreadline-version.patch
 
 %description
 The util-linux package contains a random collection of files that
@@ -300,6 +301,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Wed Jan 8 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.32.1-5
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:fix quit dialog for non-libreadline version
+
 * Tue Dec 31 2019 openEuler Buildteam <buildteam@openeuler.org> - 2.32.1-4
 - Type:enhancement
 - ID:NA
