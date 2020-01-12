@@ -1,9 +1,9 @@
 %define compldir %{_datadir}/bash-completion/completions/
-%define _pre_version__ 2.32
+%define _pre_version__ 2.34
 
 Name:           util-linux
-Version:        %{_pre_version__}.1
-Release:        5
+Version:        %{_pre_version__}
+Release:        1
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -38,37 +38,7 @@ Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19
 
 Patch0000:      2.28-login-lastlog-create.patch
 
-Patch6000:      rename-prevent-no-act-from-setting-no-overwrite.patch
-Patch6001:      bash-completion-fix-few-bash-set-u-issues.patch
-Patch6002:      bash-completion-fix-typo-in-blockdev-file.patch
-Patch6003:      fdisk-fix-typo-in-debug-string.patch
-Patch6004:      lib-canonicalize-fix-truncation-warning.patch
-Patch6005:      zramctl-fix-truncation-warning.patch
-Patch6006:      last-fix-false-positive-compiler-warning.patch
-Patch6007:      libfdisk-Fix-multipath-partition-seperators-for-user.patch
-Patch6008:      lib-pager-fix-compiler-warning-Wrestrict.patch
-Patch6009:      libfdisk-fix-compiler-warning-Wmaybe-uninitialized.patch
-Patch6010:      losetup-fix-mem-leak-improve-code-coverity-scan.patch
-Patch6011:      lscpu-fix-resource-leak-coverity-scan.patch
-Patch6012:      lscpu-fixed-part-ID-for-ARM-Cortex-M7.patch
-Patch6013:      libuuid-fix-name-based-UUIDs.patch
-Patch6014:      fallocate-add-missing-semicolon.patch
-Patch6015:      blkzone-fix-report-zones-sector-offset-check.patch
-Patch6016:      libblkid-fix-detection-of-dm-integrity-superblock.patch
-Patch6017:      fix-a-bug-where-switch_root-would-erroneously-try-to.patch
-Patch6018:      libblkid-Fix-hidding-typo.patch
-Patch6019:      mkswap-fix-page-size-warning-message.patch
-Patch6020:      lslogins-remove-duplicate-NULL-check.patch
-Patch6021:      hexdump-fix-potential-null-pointer-dereference-warni.patch
-Patch6022:      chmem-add-initilizer-clang.patch
-Patch6023:      libblkid-ntfs-fix-compiler-warning-Wpedantic.patch
-Patch6024:      last-fix-wtmp-user-name-buffer-overflow-asan.patch
-Patch6025:      various-fix-uninitialized-when-used-warnings-clang.patch
-Patch6026:      include-add-no-return-function-attribute.patch
-Patch6027:      agetty-Fix-input-of-non-ASCII-characters-in-get_logn.patch
-Patch6028:      script-be-sensitive-to-another-SIGCHLD-ssi_codes.patch
-Patch6029:      su-be-sensitive-to-another-SIGCHLD-ssi_codes.patch
-Patch6030:      fdisk-fix-quit-dialog-for-non-libreadline-version.patch
+Patch6000:      fdisk-fix-quit-dialog-for-non-libreadline-version.patch
 
 %description
 The util-linux package contains a random collection of files that
@@ -247,8 +217,8 @@ fi
 %ghost %verify(not md5 size mtime) %config(noreplace,missingok) /etc/mtab
 %{_unitdir}/{fstrim.*,uuidd.*}
 %{_libdir}/{libfdisk.so.*,libsmartcols.so.*,libmount.so.*,libblkid.so.*,libuuid.so.*}
-%{_bindir}/{cal,chrt,col,colcrt,colrm,column,chmem,dmesg,eject,fallocate,fincore,findmnt}
-%{_bindir}/{flock,getopt,hexdump,ionice,ipcmk,ipcrm,ipcs,isosize,kill,last,lastb,logger}
+%{_bindir}/{cal,chrt,col,colcrt,colrm,column,chmem,dmesg,eject,fallocate,fincore,findmnt,choom}
+%{_bindir}/{flock,getopt,hexdump,ionice,ipcmk,ipcrm,ipcs,isosize,kill,last,lastb,logger,hardlink}
 %{_bindir}/{look,lsblk,lscpu,lsipc,lslocks,lslogins,lsmem,lsns,mcookie,mesg,more,mountpoint}
 %{_bindir}/{namei,nsenter,prlimit,raw,rename,renice,rev,script,scriptreplay,setarch,setpriv}
 %{_bindir}/{setsid,setterm,taskset,ul,unshare,utmpdump,uuidgen,uuidparse,wall,wdctl,whereis}
@@ -276,7 +246,7 @@ fi
 
 %files -n python-libmount
 %{!?_licensedir:%global license %%doc}
-%license Documentation/licenses/COPYING.LGPLv2.1 libmount/COPYING
+%license libmount/COPYING
 %{_libdir}/python*/site-packages/libmount/
 
 %files help -f %{name}-help.files
@@ -288,10 +258,10 @@ fi
 %{_mandir}/man1/{kill.1*,last.1*,lastb.1*,logger.1*,login.1*,look.1*,lscpu.1*,lsipc.1*,lslogins.1*,lsmem.1*}
 %{_mandir}/man1/{mcookie.1*,mesg.1*,more.1*,mountpoint.1*,namei.1*,nsenter.1*,prlimit.1*,rename.1*,renice.1*}
 %{_mandir}/man1/{rev.1*,runuser.1*,script.1*,scriptreplay.1*,setpriv.1*,setsid.1*,setterm.1*,su.1*,taskset.1*}
-%{_mandir}/man1/{ul.1*,unshare.1*,utmpdump.1.gz,uuidgen.1*,uuidparse.1*,wall.1*,whereis.1*,write.1*}
+%{_mandir}/man1/{ul.1*,unshare.1*,utmpdump.1.gz,uuidgen.1*,uuidparse.1*,wall.1*,whereis.1*,write.1*,choom.1*,hardlink.1*}
 %{_mandir}/man3/{libblkid.3*,uuid.3*,uuid_clear.3*,uuid_compare.3*,uuid_copy.3*,uuid_generate.3*,uuid_generate_random.3*}
 %{_mandir}/man3/{uuid_generate_time_safe.3*,uuid_is_null.3*,uuid_parse.3*,uuid_time.3*,uuid_unparse.3*,uuid_generate_time.3*}
-%{_mandir}/man5/{fstab.5*,terminal-colors.d.5*}
+%{_mandir}/man5/{fstab.5*,terminal-colors.d.5*,adjtime_config.5.*}
 %{_mandir}/man8/{uuidd.8*,fdformat.8*,hwclock.8*,clock.8*,cfdisk.8*,sfdisk.8*,addpart.8*,agetty.8*}
 %{_mandir}/man8/{blkdiscard.8*,blkid.8*,blkzone.8*,blockdev.8*,chcpu.8*,chmem.8*,ctrlaltdel.8*,delpart.8*}
 %{_mandir}/man8/{fdisk.8*,findfs.8*,findmnt.8*,fsck.8*,fsck.cramfs.8*,fsck.minix.8*,fsfreeze.8*,fstrim.8*}
@@ -301,6 +271,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Sun Jan 12 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-1
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:update version to 2.34
+
 * Wed Jan 8 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.32.1-5
 - Type:enhancement
 - ID:NA
