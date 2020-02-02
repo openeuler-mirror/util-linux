@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        %{_pre_version__}
-Release:        1
+Release:        2
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -21,9 +21,10 @@ Source9:        util-linux-runuser-l.pamd
 BuildRequires:  audit-libs-devel >= 1.0.6 gettext-devel libselinux-devel ncurses-devel pam-devel zlib-devel popt-devel
 BuildRequires:  libutempter-devel systemd-devel systemd libuser-devel libcap-ng-devel python-devel gcc gdb
 
-Requires:       coreutils pam >= 1.1.3-7, /etc/pam.d/system-auth audit-libs >= 1.0.6 libuser
+Requires(post): coreutils
+Requires:       pam >= 1.1.3-7, /etc/pam.d/system-auth audit-libs >= 1.0.6
 Requires:       libblkid = %{version}-%{release} libmount = %{version}-%{release} libsmartcols = %{version}-%{release}
-Requires:       libfdisk = %{version}-%{release} libuuid = %{version}-%{release} systemd systemd-units shadow-utils
+Requires:       libfdisk = %{version}-%{release} libuuid = %{version}-%{release} 
 
 Conflicts:      initscripts < 9.79-4 bash-completion < 1:2.1-1 coreutils < 8.20 sysvinit-tools < 2.88-14
 Conflicts:      e2fsprogs < 1.41.8-5 filesystem < 3
@@ -32,8 +33,6 @@ Provides:       eject = 2.1.6 rfkill = 0.5
 Provides:       util-linux-ng = %{version}-%{release}
 Provides:       /bin/dmesg /bin/kill /bin/more /bin/mount /bin/umount /sbin/blkid
 Provides:       /sbin/blockdev /sbin/findfs /sbin/fsck /sbin/nologin
-Provides:       libfdisk libsmartcols libmount libblkid libuuid uuidd util-linux-user
-Obsoletes:      libsmartcols libfdisk libmount libblkid libuuid uuidd util-linux-user
 Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19
 
 Patch0000:      2.28-login-lastlog-create.patch
@@ -44,17 +43,70 @@ Patch6000:      fdisk-fix-quit-dialog-for-non-libreadline-version.patch
 The util-linux package contains a random collection of files that
 implements some low-level basic linux utilities.
 
+%package -n libfdisk
+Summary: Library for fdisk-like programs.
+License: LGPLv2+
 
-%package devel
-Summary:        Development package for ${name}
-License:        LGPLv2+
-Requires:       %{name} = %{version}-%{release} pkgconfig
-Provides:       libfdisk-devel libsmartcols-devel libmount-devel libblkid-devel libuuid-devel
-Obsoletes:      libfdisk-devel libsmartcols-devel libmount-devel libblkid-devel libuuid-devel
+%description -n libfdisk
+This package contains the library for fdisk-like programs.
 
-%description devel
-This package contains some library and other necessary files for the
-development of %{name}.
+%package -n libsmartcols
+Summary: Library for column based text sort engine.
+License: LGPLv2+
+
+%description -n libsmartcols
+This package contains the library for column based text sort engine.
+
+%package -n libmount
+Summary: Library for device mounting
+License: LGPLv2+
+Requires: libblkid = %{version}-%{release}
+Requires: libuuid = %{version}-%{release}
+Conflicts: filesystem < 3
+
+%description -n libmount
+This package is the library for device mounting.
+
+%package -n libblkid
+Summary: Library for block device id.
+License: LGPLv2+
+Requires: libuuid = %{version}-%{release}
+Conflicts: filesystem < 3
+Requires(post): coreutils
+
+%description -n libblkid
+This package is le library for block device id.
+
+%package -n uuidd
+Summary:  UUID generation daemon
+Requires: libuuid = %{version}-%{release}
+License: GPLv2
+Requires: systemd
+Requires(pre): shadow
+Requires(post): systemd-units
+Requires(preun): systemd-units
+
+%description -n uuidd
+The uuidd daemon is used by the UUID library to generate universally
+unique identifiers (UUIDs), especially time-based UUIDs, in a secure
+and guaranteed-unique fashion, even in the face of large numbers of
+threads running on different CPUs trying to grab UUIDs.
+
+%package -n libuuid
+Summary: Universally unique ID library
+License: BSD
+Conflicts: filesystem < 3
+
+%description -n libuuid
+This package is the universally unique ID library.
+
+%package user
+Summary: libuser based util-linux utilities
+License: GPLv2
+Requires: util-linux = %{version}-%{release}
+
+%description user
+chfn and chsh utilities with dependence on libuser
 
 %package -n python-libmount
 Summary:        Python Package for the libmount library pack
@@ -64,6 +116,17 @@ License:        LGPLv2+
 %description -n python-libmount
 This package provides python support for users to use the libmount library
 to work with mount tables and mount filesystems.
+
+%package devel
+Summary:        Development package for ${name}
+License:        LGPLv2+ and BSD
+Requires:       %{name} = %{version}-%{release} pkgconfig
+Provides:       libfdisk-devel libsmartcols-devel libmount-devel libblkid-devel libuuid-devel
+Obsoletes:      libfdisk-devel libsmartcols-devel libmount-devel libblkid-devel libuuid-devel
+
+%description devel
+This package contains some library and other necessary files for the
+development of %{name}.
 
 %package help
 Summary:        Help package for ${name}
@@ -146,7 +209,7 @@ find  %{buildroot}%{_mandir}/man8 -regextype posix-egrep  \
 rm -rf %{buildroot}%{_libdir}/*.{la,a}
 rm -rf %{buildroot}%{_libdir}/python*/site-packages/*.{la,a}
 
-%pre
+%pre -n uuidd
 getent group uuidd >/dev/null || groupadd -r uuidd
 getent passwd uuidd >/dev/null || \
 useradd -r -g uuidd -d /var/lib/libuuid -s /sbin/nologin \
@@ -154,7 +217,6 @@ useradd -r -g uuidd -d /var/lib/libuuid -s /sbin/nologin \
 exit 0
 
 %post
-/sbin/ldconfig
 [ -d /var/log ] || mkdir -p /var/log
 
 touch /var/log/lastlog
@@ -174,6 +236,9 @@ then
     ln -sf ../proc/self/mounts /etc/mtab || :
 fi
 
+%post -n libblkid 
+/sbin/ldconfig
+
 [ -d /run/blkid ] || mkdir -p /run/blkid
 for i in /etc/blkid.tab /etc/blkid.tab.old \
   /etc/blkid/blkid.tab /etc/blkid/blkid.tab.old
@@ -184,39 +249,49 @@ do
     fi
 done
 
+%postun -n libblkid -p /sbin/ldconfig
+
+%post -n libuuid -p /sbin/ldconfig
+%postun -n libuuid -p /sbin/ldconfig
+
+%post -n libmount -p /sbin/ldconfig
+%postun -n libmount -p /sbin/ldconfig
+
+%post -n libsmartcols -p /sbin/ldconfig
+%postun -n libsmartcols -p /sbin/ldconfig
+
+%post -n libfdisk -p /sbin/ldconfig
+%postun -n libfdisk -p /sbin/ldconfig
+
+%post -n uuidd
 %systemd_post uuidd
 if [ $1 -eq 1 ]
 then
     /bin/systemctl start uuidd > /dev/null 2>&1 || :
 fi
 
-%preun
+%preun -n uuidd
 %systemd_preun uuidd
 
-%postun
+%postun -n uuidd
 /sbin/ldconfig
 %systemd_postun_with_restart uuidd
 
 %files -f %{name}.files
 %exclude %{compldir}/{mount,umount}
 %{!?_licensedir:%global license %%doc}
-%license Documentation/licenses/* AUTHORS libblkid/COPYING
-%config(noreplace) %{_sysconfdir}/pam.d/{login,remote,su,su-l,runuser,runuser-l,chfn,chsh}
+%license Documentation/licenses/* AUTHORS
+%config(noreplace) %{_sysconfdir}/pam.d/{login,remote,su,su-l,runuser,runuser-l}
 %config(noreplace) %{_prefix}/lib/udev/rules.d/60-raw.rules
 %config(noreplace) %verify(not md5 mtime size) %{_sysconfdir}/adjtime
-%dir %attr(2775, uuidd, uuidd) /var/lib/libuuid
-%dir %attr(2775, uuidd, uuidd) /run/uuidd
 %attr(4755,root,root) %{_bindir}/mount
 %attr(4755,root,root) %{_bindir}/umount
 %attr(4755,root,root) %{_bindir}/su
 %attr(755,root,root) %{_bindir}/login
 %attr(2755,root,tty) %{_bindir}/write
-%attr(4711,root,root) %{_bindir}/chfn
-%attr(4711,root,root) %{_bindir}/chsh
 %ghost %attr(0644,root,root) %verify(not md5 size mtime) /var/log/lastlog
 %ghost %verify(not md5 size mtime) %config(noreplace,missingok) /etc/mtab
-%{_unitdir}/{fstrim.*,uuidd.*}
-%{_libdir}/{libfdisk.so.*,libsmartcols.so.*,libmount.so.*,libblkid.so.*,libuuid.so.*}
+%{_unitdir}/fstrim.*
 %{_bindir}/{cal,chrt,col,colcrt,colrm,column,chmem,dmesg,eject,fallocate,fincore,findmnt,choom}
 %{_bindir}/{flock,getopt,hexdump,ionice,ipcmk,ipcrm,ipcs,isosize,kill,last,lastb,logger,hardlink}
 %{_bindir}/{look,lsblk,lscpu,lsipc,lslocks,lslogins,lsmem,lsns,mcookie,mesg,more,mountpoint}
@@ -226,7 +301,7 @@ fi
 %{_sbindir}/{findfs,fsck,fsck.cramfs,fsck.minix,fsfreeze,fstrim,ldattach,losetup,mkfs,mkfs.cramfs}
 %{_sbindir}/{mkfs.minix,mkswap,nologin,partx,pivot_root,readprofile,resizepart,rfkill,rtcwake}
 %{_sbindir}/{runuser,sulogin,swaplabel,swapoff,swapon,switch_root,wipefs,zramctl}
-%{_sbindir}/{clock,fdformat,hwclock,cfdisk,sfdisk,uuidd}
+%{_sbindir}/{clock,fdformat,hwclock,cfdisk,sfdisk}
 %{compldir}/{addpart,blkdiscard,blkid,blkzone,blockdev,cal,chcpu,chmem,chrt,col}
 %{compldir}/{colcrt,colrm,column,ctrlaltdel,delpart,dmesg,eject,fallocate,fdisk}
 %{compldir}/{fincore,findfs,findmnt,flock,fsck,fsck.cramfs,fsck.minix,fsfreeze}
@@ -237,17 +312,53 @@ fi
 %{compldir}/{resizepart,rev,rfkill,rtcwake,runuser,script,scriptreplay,setarch}
 %{compldir}/{setpriv,setsid,setterm,su,swaplabel,swapoff,swapon,taskset,ul,unshare}
 %{compldir}/{utmpdump,uuidgen,uuidparse,wall,wdctl,whereis,wipefs,write,zramctl}
-%{compldir}/{fdformat,hwclock,cfdisk,sfdisk,chfn,chsh,uuidd}
+%{compldir}/{fdformat,hwclock,cfdisk,sfdisk}
 
-%files devel
-%{_includedir}/{libfdisk,libsmartcols,uuid,blkid,libmount}
-%{_libdir}/{libfdisk.so,libsmartcols.so,libuuid.so,libblkid.so,libmount.so}
-%{_libdir}/pkgconfig/{fdisk.pc,smartcols.pc,uuid.pc,blkid.pc,mount.pc}
+%files -n libfdisk
+%license Documentation/licenses/COPYING.LGPL-2.1* libfdisk/COPYING
+%{_libdir}/libfdisk.so.*
+
+%files -n libsmartcols
+%license Documentation/licenses/COPYING.LGPL-2.1* libsmartcols/COPYING
+%{_libdir}/libsmartcols.so.*
+
+%files -n libmount
+%license Documentation/licenses/COPYING.LGPL-2.1* libmount/COPYING
+%{_libdir}/libmount.so.*
+
+%files -n libblkid
+%doc libblkid/COPYING
+%{_libdir}/libblkid.so.*
+
+%files -n uuidd
+%license Documentation/licenses/COPYING.GPL-2.0*
+%{_sbindir}/uuidd
+%{_unitdir}/uuidd.*
+%dir %attr(2775, uuidd, uuidd) /var/lib/libuuid
+%dir %attr(2775, uuidd, uuidd) /run/uuidd
+%{compldir}/uuidd
+
+%files -n libuuid
+%license Documentation/licenses/COPYING.BSD-3* libuuid/COPYING
+%{_libdir}/libuuid.so.*
+
+%files user
+%config(noreplace)	%{_sysconfdir}/pam.d/chfn
+%config(noreplace)	%{_sysconfdir}/pam.d/chsh
+%attr(4711,root,root)	%{_bindir}/chfn
+%attr(4711,root,root)	%{_bindir}/chsh
+%{compldir}/chfn
+%{compldir}/chsh
 
 %files -n python-libmount
 %{!?_licensedir:%global license %%doc}
 %license libmount/COPYING
 %{_libdir}/python*/site-packages/libmount/
+
+%files devel
+%{_includedir}/{libfdisk,libsmartcols,uuid,blkid,libmount}
+%{_libdir}/{libfdisk.so,libsmartcols.so,libuuid.so,libblkid.so,libmount.so}
+%{_libdir}/pkgconfig/{fdisk.pc,smartcols.pc,uuid.pc,blkid.pc,mount.pc}
 
 %files help -f %{name}-help.files
 %exclude %{_datadir}/doc/util-linux/getopt/*
@@ -271,6 +382,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Tue Jan 21 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-2
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:add subpackages
+
 * Sun Jan 12 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-1
 - Type:enhancement
 - ID:NA
