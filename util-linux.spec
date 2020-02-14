@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        %{_pre_version__}
-Release:        2
+Release:        3
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -164,9 +164,7 @@ unset LINGUAS || :
 %make_build %{_build_arg0__} %{_build_arg1__}
 
 %check
-%if %{?_with_check:1}%{!?_with_check:0}
 make check
-%endif
 
 %install
 %make_install
@@ -382,6 +380,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Fri Feb 14 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-3
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:enable check
+
 * Tue Jan 21 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-2
 - Type:enhancement
 - ID:NA
