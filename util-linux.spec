@@ -1,13 +1,12 @@
 %define compldir %{_datadir}/bash-completion/completions/
-%define _pre_version__ 2.34
 
 Name:           util-linux
-Version:        %{_pre_version__}
-Release:        3
+Version:        2.34
+Release:        4
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
-Source0:        https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{_pre_version__}/%{name}-%{version}.tar.xz
+Source0:        https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{version}/%{name}-%{version}.tar.xz
 Source1:        util-linux-login.pamd
 Source2:        util-linux-remote.pamd
 Source3:        util-linux-chsh-chfn.pamd
@@ -36,8 +35,9 @@ Provides:       /sbin/blockdev /sbin/findfs /sbin/fsck /sbin/nologin
 Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19
 
 Patch0000:      2.28-login-lastlog-create.patch
-
-Patch6000:      fdisk-fix-quit-dialog-for-non-libreadline-version.patch
+Patch0001:      fdisk-fix-quit-dialog-for-non-libreadline-version.patch
+Patch0002:      libmount-move-already-mounted-code-to-separate-funct.patch
+Patch0003:      libmount-try-read-only-mount-on-write-protected-supe.patch
 
 %description
 The util-linux package contains a random collection of files that
@@ -380,6 +380,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Thu Mar 5 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-4
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:fix the problem of one iso can't mount directly twice by default
+
 * Fri Feb 14 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-3
 - Type:enhancement
 - ID:NA
