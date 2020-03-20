@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.34
-Release:        4
+Release:        5
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -38,6 +38,8 @@ Patch0000:      2.28-login-lastlog-create.patch
 Patch0001:      fdisk-fix-quit-dialog-for-non-libreadline-version.patch
 Patch0002:      libmount-move-already-mounted-code-to-separate-funct.patch
 Patch0003:      libmount-try-read-only-mount-on-write-protected-supe.patch
+Patch0004:      lscpu-Add-HiSilicon-aarch64-tsv110-cpupart.patch
+Patch0005:      lscpu-use-official-name-for-HiSilicon-tsv110.patch
 
 %description
 The util-linux package contains a random collection of files that
@@ -380,6 +382,14 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Fri Mar 20 2020 openEuler Buildteam <buildteam@openeuler.org
+> - 2.34-5
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:Add an entry for the HiSilicon aarch64 part tsv110 and
+       use official name for HiSilicon tsv110
+
 * Thu Mar 5 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-4
 - Type:enhancement
 - ID:NA
