@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.34
-Release:        6
+Release:        7
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -157,6 +157,7 @@ unset LINGUAS || :
   --enable-usrdir-path \
   --enable-write \
   --enable-raw \
+  --enable-hardlink \
   --with-python=2 \
   --with-systemd \
   --with-udev \
@@ -384,6 +385,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Sun Mar 22 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-7
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:enable hardlink of configure
+
 * Sat Mar 21 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-6
 - Type:enhancement
 - ID:NA
