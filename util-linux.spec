@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.34
-Release:        7
+Release:        8
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -29,10 +29,10 @@ Conflicts:      initscripts < 9.79-4 bash-completion < 1:2.1-1 coreutils < 8.20 
 Conflicts:      e2fsprogs < 1.41.8-5 filesystem < 3
 
 Provides:       eject = 2.1.6 rfkill = 0.5
-Provides:       util-linux-ng = %{version}-%{release} hardlink = 1:1.3-9
+Provides:       util-linux-ng = %{version}-%{release}
 Provides:       /bin/dmesg /bin/kill /bin/more /bin/mount /bin/umount /sbin/blkid
 Provides:       /sbin/blockdev /sbin/findfs /sbin/fsck /sbin/nologin
-Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19 hardlink <= 1:1.3-9
+Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19
 
 Patch0000:      2.28-login-lastlog-create.patch
 Patch0001:      fdisk-fix-quit-dialog-for-non-libreadline-version.patch
@@ -157,7 +157,6 @@ unset LINGUAS || :
   --enable-usrdir-path \
   --enable-write \
   --enable-raw \
-  --enable-hardlink \
   --with-python=2 \
   --with-systemd \
   --with-udev \
@@ -385,6 +384,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Sun Mar 22 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-8
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:don not usr the hardlink by default
+
 * Sun Mar 22 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.34-7
 - Type:enhancement
 - ID:NA
