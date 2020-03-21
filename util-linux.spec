@@ -134,8 +134,6 @@ development of %{name}.
 Summary:        Help package for ${name}
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
-Obsoletes:      hardlink-help <= 1:1.3-9
-Provides:       hardlink-help = 1:1.3-9
 
 %description help
 This package contains some doc and man help files for %{name}.
@@ -366,12 +364,13 @@ fi
 %exclude %{_datadir}/doc/util-linux/getopt/*
 %doc README NEWS Documentation/deprecated.txt
 %doc %attr(0644,-,-) misc-utils/getopt-*.{bash,tcsh}
+%exclude %{_mandir}/man1/hardlink.1*
 %{_mandir}/man1/{chfn.1*,chsh.1*,cal.1*,chrt.1*,col.1*,colcrt.1*,colrm.1*,column.1*,dmesg.1*,eject.1*}
 %{_mandir}/man1/{fallocate.1*,fincore.1*,flock.1*,getopt.1*,hexdump.1*,ionice.1*,ipcmk.1*,ipcrm.1*,ipcs.1*}
 %{_mandir}/man1/{kill.1*,last.1*,lastb.1*,logger.1*,login.1*,look.1*,lscpu.1*,lsipc.1*,lslogins.1*,lsmem.1*}
 %{_mandir}/man1/{mcookie.1*,mesg.1*,more.1*,mountpoint.1*,namei.1*,nsenter.1*,prlimit.1*,rename.1*,renice.1*}
 %{_mandir}/man1/{rev.1*,runuser.1*,script.1*,scriptreplay.1*,setpriv.1*,setsid.1*,setterm.1*,su.1*,taskset.1*}
-%{_mandir}/man1/{ul.1*,unshare.1*,utmpdump.1.gz,uuidgen.1*,uuidparse.1*,wall.1*,whereis.1*,write.1*,choom.1*,hardlink.1*}
+%{_mandir}/man1/{ul.1*,unshare.1*,utmpdump.1.gz,uuidgen.1*,uuidparse.1*,wall.1*,whereis.1*,write.1*,choom.1*}
 %{_mandir}/man3/{libblkid.3*,uuid.3*,uuid_clear.3*,uuid_compare.3*,uuid_copy.3*,uuid_generate.3*,uuid_generate_random.3*}
 %{_mandir}/man3/{uuid_generate_time_safe.3*,uuid_is_null.3*,uuid_parse.3*,uuid_time.3*,uuid_unparse.3*,uuid_generate_time.3*}
 %{_mandir}/man5/{fstab.5*,terminal-colors.d.5*,adjtime_config.5.*}
