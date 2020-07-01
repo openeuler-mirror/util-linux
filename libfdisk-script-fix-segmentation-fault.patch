@@ -1,0 +1,33 @@
+From 3468dda9c34b1860d4b64f590651aab718b0cc5e Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Ga=C3=ABl=20PORTAY?= <gael.portay@collabora.com>
+Date: Fri, 20 Mar 2020 16:10:35 -0400
+Subject: [PATCH 151/389] libfdisk: (script) fix segmentation fault
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+This patch fixes a segmentation fault that occurs if the name value is
+empty (i.e. name=).
+
+Signed-off-by: Gaël PORTAY <gael.portay@collabora.com>
+---
+ libfdisk/src/script.c | 3 ++-
+ 1 file changed, 2 insertions(+), 1 deletion(-)
+
+diff --git a/libfdisk/src/script.c b/libfdisk/src/script.c
+index e73c8dc..cc53c3b 100644
+--- a/libfdisk/src/script.c
++++ b/libfdisk/src/script.c
+@@ -1059,7 +1059,8 @@ static int parse_line_nameval(struct fdisk_script *dp, char *s)
+ 		} else if (!strncasecmp(p, "name=", 5)) {
+ 			p += 5;
+ 			rc = next_string(&p, &pa->name);
+-			unhexmangle_string(pa->name);
++			if (!rc)
++				unhexmangle_string(pa->name);
+ 
+ 		} else if (!strncasecmp(p, "type=", 5) ||
+ 			   !strncasecmp(p, "Id=", 3)) {		/* backward compatibility */
+-- 
+1.8.3.1
+

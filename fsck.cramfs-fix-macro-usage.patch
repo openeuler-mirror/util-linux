@@ -1,0 +1,29 @@
+From d52786aab7fa7d8ce717ad9fe8fbf84bc746c75a Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?Zbigniew=20J=C4=99drzejewski-Szmek?= <zbyszek@in.waw.pl>
+Date: Tue, 25 Feb 2020 13:29:08 +0100
+Subject: [PATCH 140/389] fsck.cramfs: fix macro usage
+
+Autotoolz does not define HAVE_LCHOWN when the condition is false,
+so it is appropriate to use #ifdef/#ifndef as everywhere else.
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ disk-utils/fsck.cramfs.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/disk-utils/fsck.cramfs.c b/disk-utils/fsck.cramfs.c
+index a819951..3a43dd7 100644
+--- a/disk-utils/fsck.cramfs.c
++++ b/disk-utils/fsck.cramfs.c
+@@ -368,7 +368,7 @@ static int uncompress_block(void *src, size_t len)
+ 	return stream.total_out;
+ }
+ 
+-#if !HAVE_LCHOWN
++#ifndef HAVE_LCHOWN
+ #define lchown chown
+ #endif
+ 
+-- 
+1.8.3.1
+

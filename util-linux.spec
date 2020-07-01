@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.35.1
-Release:        1
+Release:        2
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -25,19 +25,48 @@ Requires:       pam >= 1.1.3-7, /etc/pam.d/system-auth audit-libs >= 1.0.6
 Requires:       libblkid = %{version}-%{release} libmount = %{version}-%{release} libsmartcols = %{version}-%{release}
 Requires:       libfdisk = %{version}-%{release} libuuid = %{version}-%{release} 
 
-Conflicts:      initscripts < 9.79-4 bash-completion < 1:2.1-1 coreutils < 8.20 sysvinit-tools < 2.88-14
+Conflicts:      initscripts < 9.79-4 bash-completion < 1:2.1-1 coreutils < 8.20
 Conflicts:      e2fsprogs < 1.41.8-5 filesystem < 3
 
 Provides:       eject = 2.1.6 rfkill = 0.5
 Provides:       util-linux-ng = %{version}-%{release}
 Provides:       /bin/dmesg /bin/kill /bin/more /bin/mount /bin/umount /sbin/blkid
 Provides:       /sbin/blockdev /sbin/findfs /sbin/fsck /sbin/nologin
-Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19
+Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19 sysvinit-tools < 0:2.89
 
-Patch0000:      2.28-login-lastlog-create.patch
-Patch0001:      libmount-move-already-mounted-code-to-separate-funct.patch
-Patch0002:      libmount-try-read-only-mount-on-write-protected-supe.patch
-Patch0003:      lscpu-use-official-name-for-HiSilicon-tsv110.patch
+Patch0:         2.28-login-lastlog-create.patch
+Patch1:         libmount-move-already-mounted-code-to-separate-funct.patch
+Patch2:         libmount-try-read-only-mount-on-write-protected-supe.patch
+Patch3:         lscpu-use-official-name-for-HiSilicon-tsv110.patch
+Patch4:         Fix-off-by-one-when-checking-dev-mapper-path.patch
+Patch5:         cal-Correctly-center-the-year.patch
+Patch6:         cal-correctly-set-the-week-width.patch
+Patch7:         clang-tidy-use-ceil.patch
+Patch8:         findmnt-make-xalloc-use-mroe-robust.patch
+Patch9:         fsck.cramfs-fix-macro-usage.patch
+Patch10:        hwclock-fix-audit-exit-status.patch
+Patch11:        kill-include-sys-types.h-before-checking-SYS_pidfd_s.patch
+Patch12:        lib-mangle-check-for-the-NULL-string-argument.patch
+Patch13:        lib-strutils-fix-floating-point-exception.patch
+Patch14:        libfdisk-fix-alignment-logic-for-tiny-partitions.patch
+Patch15:        tests-Fix-for-misc-fallocate-test-build-failure.patch
+Patch16:        libfdisk-fix-partition-calculation-for-BLKPG_-ioctls.patch
+Patch17:        libfdisk-make-sure-we-check-for-maximal-number-of-pa.patch
+Patch18:        libfdisk-remove-unwanted-assert.patch
+Patch19:        libfdisk-script-accept-sector-size-ignore-unknown-he.patch
+Patch20:        libfdisk-script-fix-memory-leak.patch
+Patch21:        libfdisk-script-fix-partno_from_devname.patch
+Patch22:        libfdisk-script-fix-segmentation-fault.patch
+Patch23:        libmount-use-mnt_stat_mountpoint-on-more-places.patch
+Patch24:        libuuid-ensure-variable-is-initialized-cppcheck.patch
+Patch25:        lsblk-Fall-back-to-ID_SERIAL.patch 
+Patch26:        lscpu-fix-SIGSEGV-on-archs-without-drawers-books.patch
+Patch27:        script-fix-minor-warning.patch
+Patch28:        sfdisk-fix-ref-counting-for-the-script.patch
+Patch29:        sfdisk-only-report-I-O-errors-on-move-data.patch
+Patch30:        umount-don-t-try-it-as-non-suid-if-not-found-mountin.patch
+Patch31:        write-fix-potential-string-overflow.patch
+Patch32:        do-not-excute-mountpoint-test.patch
 
 %description
 The util-linux package contains a random collection of files that
@@ -287,6 +316,7 @@ fi
 %attr(4755,root,root) %{_bindir}/su
 %attr(755,root,root) %{_bindir}/login
 %attr(2755,root,tty) %{_bindir}/write
+%attr(2555,root,tty) %{_bindir}/wall
 %ghost %attr(0644,root,root) %verify(not md5 size mtime) /var/log/lastlog
 %ghost %verify(not md5 size mtime) %config(noreplace,missingok) /etc/mtab
 %{_unitdir}/fstrim.*
@@ -294,7 +324,7 @@ fi
 %{_bindir}/{flock,getopt,hexdump,ionice,ipcmk,ipcrm,ipcs,isosize,kill,last,lastb,logger,hardlink}
 %{_bindir}/{look,lsblk,lscpu,lsipc,lslocks,lslogins,lsmem,lsns,mcookie,mesg,more,mountpoint}
 %{_bindir}/{namei,nsenter,prlimit,raw,rename,renice,rev,script,scriptreplay,setarch,setpriv}
-%{_bindir}/{setsid,setterm,taskset,ul,unshare,utmpdump,uuidgen,uuidparse,wall,wdctl,whereis,scriptlive}
+%{_bindir}/{setsid,setterm,taskset,ul,unshare,utmpdump,uuidgen,uuidparse,wdctl,whereis,scriptlive}
 %{_sbindir}/{addpart,agetty,blkdiscard,blkid,blkzone,blockdev,chcpu,ctrlaltdel,delpart,fdisk}
 %{_sbindir}/{findfs,fsck,fsck.cramfs,fsck.minix,fsfreeze,fstrim,ldattach,losetup,mkfs,mkfs.cramfs}
 %{_sbindir}/{mkfs.minix,mkswap,nologin,partx,pivot_root,readprofile,resizepart,rfkill,rtcwake}
@@ -381,6 +411,9 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Wed Jul 1 2020 liuchengaung<liuchenguang4@huawei.com> - 2.35.1-2
+- quality enhancement synchronization github patch
+
 * Mon May 11 2020 openEuler Buildteam <buildteam@openeuler.org> - 2.35.1-1
 - Type:requirement
 - ID:NA

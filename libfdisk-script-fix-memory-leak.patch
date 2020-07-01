@@ -1,0 +1,35 @@
+From d74b16bdf1205e027eb0dab15845b071435f397a Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Tue, 4 Feb 2020 15:54:10 +0100
+Subject: [PATCH 022/389] libfdisk: (script) fix memory leak
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ libfdisk/src/script.c | 4 ++++
+ 1 file changed, 4 insertions(+)
+
+diff --git a/libfdisk/src/script.c b/libfdisk/src/script.c
+index d3e67fa..6f66f88 100644
+--- a/libfdisk/src/script.c
++++ b/libfdisk/src/script.c
+@@ -192,6 +192,7 @@ void fdisk_unref_script(struct fdisk_script *dp)
+ 	if (dp->refcount <= 0) {
+ 		fdisk_reset_script(dp);
+ 		fdisk_unref_context(dp->cxt);
++		fdisk_unref_table(dp->table);
+ 		DBG(SCRIPT, ul_debugobj(dp, "free script"));
+ 		free(dp);
+ 	}
+@@ -1459,6 +1460,9 @@ int fdisk_script_read_file(struct fdisk_script *dp, FILE *f)
+  * fdisk_new_script()). This context may be completely independent on
+  * context used for fdisk_set_script().
+  *
++ * Don't forget to call fdisk_set_script(cxt, NULL); to remove this reference
++ * if no more necessary!
++ *
+  * Returns: <0 on error, 0 on success.
+  */
+ int fdisk_set_script(struct fdisk_context *cxt, struct fdisk_script *dp)
+-- 
+1.8.3.1
+

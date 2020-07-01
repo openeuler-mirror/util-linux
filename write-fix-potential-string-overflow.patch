@@ -1,0 +1,41 @@
+From cdf84bf65804873708b2b76551d64116123ac128 Mon Sep 17 00:00:00 2001
+From: Sami Kerola <kerolasa@iki.fi>
+Date: Sat, 8 Feb 2020 21:12:14 +0000
+Subject: [PATCH 038/389] write: fix potential string overflow
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+Noticed when compiled with gcc verion 9.2.1 20200130.
+
+term-utils/write.c:182:7: warning: ‘strcmp’ argument 1 declared attribute
+			  ‘nonstring’ [-Wstringop-overflow=]
+  182 |   if (strcmp(u->ut_line, ctl->src_tty_name) == 0) {
+      |       ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+In file included from /usr/include/utmpx.h:31,
+                 from term-utils/write.c:60:
+/usr/include/bits/utmpx.h:59:8: note: argument ‘ut_line’ declared here
+   59 |   char ut_line[__UT_LINESIZE]
+      |        ^~~~~~~
+
+Signed-off-by: Sami Kerola <kerolasa@iki.fi>
+---
+ term-utils/write.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/term-utils/write.c b/term-utils/write.c
+index 3436fbd..90eb18c 100644
+--- a/term-utils/write.c
++++ b/term-utils/write.c
+@@ -179,7 +179,7 @@ static void search_utmp(struct write_control *ctl)
+ 		if (ctl->src_uid && !tty_writeable)
+ 			/* skip ttys with msgs off */
+ 			continue;
+-		if (strcmp(u->ut_line, ctl->src_tty_name) == 0) {
++		if (memcmp(u->ut_line, ctl->src_tty_name, strlen(ctl->src_tty_name) + 1) == 0) {
+ 			user_is_me = 1;
+ 			/* don't write to yourself */
+ 			continue;
+-- 
+1.8.3.1
+

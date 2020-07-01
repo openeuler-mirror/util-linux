@@ -1,0 +1,83 @@
+From 3168ba091f2b0cbd85253440ef11d27b46f34380 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Mon, 6 Apr 2020 11:58:29 +0200
+Subject: [PATCH 190/389] libmount: use mnt_stat_mountpoint() on more places
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ libmount/src/context_mount.c |  8 ++++----
+ libmount/src/mountP.h        |  1 +
+ libmount/src/utils.c         | 10 ++++++++++
+ 3 files changed, 15 insertions(+), 4 deletions(-)
+
+diff --git a/libmount/src/context_mount.c b/libmount/src/context_mount.c
+index efd7050..ff7ee69 100644
+--- a/libmount/src/context_mount.c
++++ b/libmount/src/context_mount.c
+@@ -1757,7 +1757,7 @@ int mnt_context_get_mount_excode(
+ 		if (!buf)
+ 			break;
+ 		if (geteuid() == 0) {
+-			if (stat(tgt, &st) || !S_ISDIR(st.st_mode))
++			if (mnt_stat_mountpoint(tgt, &st) || !S_ISDIR(st.st_mode))
+ 				snprintf(buf, bufsz, _("mount point is not a directory"));
+ 			else
+ 				snprintf(buf, bufsz, _("permission denied"));
+@@ -1783,10 +1783,10 @@ int mnt_context_get_mount_excode(
+ 			snprintf(buf, bufsz, _("%s already mounted or mount point busy"), src);
+ 		break;
+ 	case ENOENT:
+-		if (tgt && lstat(tgt, &st)) {
++		if (tgt && mnt_lstat_mountpoint(tgt, &st)) {
+ 			if (buf)
+ 				snprintf(buf, bufsz, _("mount point does not exist"));
+-		} else if (tgt && stat(tgt, &st)) {
++		} else if (tgt && mnt_stat_mountpoint(tgt, &st)) {
+ 			if (buf)
+ 				snprintf(buf, bufsz, _("mount point is a symbolic link to nowhere"));
+ 		} else if (src && stat(src, &st)) {
+@@ -1801,7 +1801,7 @@ int mnt_context_get_mount_excode(
+ 		break;
+ 
+ 	case ENOTDIR:
+-		if (stat(tgt, &st) || ! S_ISDIR(st.st_mode)) {
++		if (mnt_stat_mountpoint(tgt, &st) || ! S_ISDIR(st.st_mode)) {
+ 			if (buf)
+ 				snprintf(buf, bufsz, _("mount point is not a directory"));
+ 		} else if (src && stat(src, &st) && errno == ENOTDIR) {
+diff --git a/libmount/src/mountP.h b/libmount/src/mountP.h
+index 9e7ad2b..d8ba0ab 100644
+--- a/libmount/src/mountP.h
++++ b/libmount/src/mountP.h
+@@ -123,6 +123,7 @@ extern void mnt_free_filesystems(char **filesystems);
+ 
+ extern char *mnt_get_kernel_cmdline_option(const char *name);
+ extern int mnt_stat_mountpoint(const char *target, struct stat *st);
++extern int mnt_lstat_mountpoint(const char *target, struct stat *st);
+ extern FILE *mnt_get_procfs_memstream(int fd, char **membuf);
+ 
+ /* tab.c */
+diff --git a/libmount/src/utils.c b/libmount/src/utils.c
+index ffbd0c1..77207e7 100644
+--- a/libmount/src/utils.c
++++ b/libmount/src/utils.c
+@@ -133,6 +133,16 @@ int mnt_stat_mountpoint(const char *target, struct stat *st)
+ #endif
+ }
+ 
++int mnt_lstat_mountpoint(const char *target, struct stat *st)
++{
++#ifdef AT_NO_AUTOMOUNT
++	return fstatat(AT_FDCWD, target, st, AT_NO_AUTOMOUNT | AT_SYMLINK_NOFOLLOW);
++#else
++	return lstat(target, st);
++#endif
++}
++
++
+ /*
+  * Note that the @target has to be an absolute path (so at least "/").  The
+  * @filename returns an allocated buffer with the last path component, for example:
+-- 
+1.8.3.1
+

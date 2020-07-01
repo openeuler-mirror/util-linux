@@ -1,0 +1,80 @@
+From c6d8486aad9ba080504d9b1ab4ea396cb2f1b81a Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Thu, 27 Feb 2020 10:02:39 +0100
+Subject: [PATCH 087/389] findmnt: make xalloc use mroe robust
+
+Addresses: https://bugzilla.redhat.com/show_bug.cgi?id=1807003
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ misc-utils/findmnt.c | 27 ++++++++++++++++++---------
+ 1 file changed, 18 insertions(+), 9 deletions(-)
+
+diff --git a/misc-utils/findmnt.c b/misc-utils/findmnt.c
+index a4b7a1b..53f647f 100644
+--- a/misc-utils/findmnt.c
++++ b/misc-utils/findmnt.c
+@@ -533,22 +533,28 @@ static char *get_data(struct libmnt_fs *fs, int num)
+ 		break;
+ 	}
+ 	case COL_TARGET:
+-		str = xstrdup(mnt_fs_get_target(fs));
++		if (mnt_fs_get_target(fs))
++			str = xstrdup(mnt_fs_get_target(fs));
+ 		break;
+ 	case COL_FSTYPE:
+-		str = xstrdup(mnt_fs_get_fstype(fs));
++		if (mnt_fs_get_fstype(fs))
++			str = xstrdup(mnt_fs_get_fstype(fs));
+ 		break;
+ 	case COL_OPTIONS:
+-		str = xstrdup(mnt_fs_get_options(fs));
++		if (mnt_fs_get_options(fs))
++			str = xstrdup(mnt_fs_get_options(fs));
+ 		break;
+ 	case COL_VFS_OPTIONS:
+-		str = xstrdup(mnt_fs_get_vfs_options(fs));
++		if (mnt_fs_get_vfs_options(fs))
++			str = xstrdup(mnt_fs_get_vfs_options(fs));
+ 		break;
+ 	case COL_FS_OPTIONS:
+-		str = xstrdup(mnt_fs_get_fs_options(fs));
++		if (mnt_fs_get_fs_options(fs))
++			str = xstrdup(mnt_fs_get_fs_options(fs));
+ 		break;
+ 	case COL_OPT_FIELDS:
+-		str = xstrdup(mnt_fs_get_optional_fields(fs));
++		if (mnt_fs_get_optional_fields(fs))
++			str = xstrdup(mnt_fs_get_optional_fields(fs));
+ 		break;
+ 	case COL_UUID:
+ 		str = get_tag(fs, "UUID", col_id);
+@@ -582,7 +588,8 @@ static char *get_data(struct libmnt_fs *fs, int num)
+ 		str = get_vfs_attr(fs, col_id);
+ 		break;
+ 	case COL_FSROOT:
+-		str = xstrdup(mnt_fs_get_root(fs));
++		if (mnt_fs_get_root(fs))
++			str = xstrdup(mnt_fs_get_root(fs));
+ 		break;
+ 	case COL_TID:
+ 		if (mnt_fs_get_tid(fs))
+@@ -659,12 +666,14 @@ static char *get_tabdiff_data(struct libmnt_fs *old_fs,
+ 		break;
+ 	case COL_OLD_OPTIONS:
+ 		if (old_fs && (change == MNT_TABDIFF_REMOUNT ||
+-			       change == MNT_TABDIFF_UMOUNT))
++			       change == MNT_TABDIFF_UMOUNT)
++		           && mnt_fs_get_options(old_fs))
+ 			str = xstrdup(mnt_fs_get_options(old_fs));
+ 		break;
+ 	case COL_OLD_TARGET:
+ 		if (old_fs && (change == MNT_TABDIFF_MOVE ||
+-			       change == MNT_TABDIFF_UMOUNT))
++			       change == MNT_TABDIFF_UMOUNT)
++			   && mnt_fs_get_target(old_fs))
+ 			str = xstrdup(mnt_fs_get_target(old_fs));
+ 		break;
+ 	default:
+-- 
+1.8.3.1
+
