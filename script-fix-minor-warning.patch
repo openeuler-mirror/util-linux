@@ -1,0 +1,31 @@
+From 9565786cb0f7d43c1228195859cc774282a5d27a Mon Sep 17 00:00:00 2001
+From: Sami Kerola <kerolasa@iki.fi>
+Date: Thu, 13 Feb 2020 20:47:51 +0000
+Subject: [PATCH 042/389] script: fix minor warning
+MIME-Version: 1.0
+Content-Type: text/plain; charset=UTF-8
+Content-Transfer-Encoding: 8bit
+
+ICO C does not allow extra ‘;’ outside of a function [-Wpedantic]
+
+Signed-off-by: Sami Kerola <kerolasa@iki.fi>
+---
+ term-utils/script-playutils.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/term-utils/script-playutils.c b/term-utils/script-playutils.c
+index 78f4d20..517c42d 100644
+--- a/term-utils/script-playutils.c
++++ b/term-utils/script-playutils.c
+@@ -98,7 +98,7 @@ static inline void timerinc(struct timeval *a, struct timeval *b)
+ 	timeradd(a, b, &res);
+ 	a->tv_sec = res.tv_sec;
+ 	a->tv_usec = res.tv_usec;
+-};
++}
+ 
+ struct replay_setup *replay_new_setup(void)
+ {
+-- 
+1.8.3.1
+

@@ -1,0 +1,25 @@
+From da0debad5355fa39c30c9c4de73a19724de6e4b6 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Tue, 4 Feb 2020 15:54:53 +0100
+Subject: [PATCH 023/389] sfdisk: fix ref-counting for the script
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ disk-utils/sfdisk.c | 1 +
+ 1 file changed, 1 insertion(+)
+
+diff --git a/disk-utils/sfdisk.c b/disk-utils/sfdisk.c
+index e08862a..1c5160c 100644
+--- a/disk-utils/sfdisk.c
++++ b/disk-utils/sfdisk.c
+@@ -1951,6 +1951,7 @@ static int command_fdisk(struct sfdisk *sf, int argc, char **argv)
+ 		break;
+ 	}
+ 
++	fdisk_set_script(sf->cxt, NULL);
+ 	fdisk_unref_script(dp);
+ 	return rc;
+ }
+-- 
+1.8.3.1
+

@@ -1,0 +1,38 @@
+From 243fff1dc6c3d59d9c3eb9ced472584b5ae8bbd2 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Mon, 27 Apr 2020 11:15:00 +0200
+Subject: [PATCH 229/389] libfdisk: (script) fix partno_from_devname()
+
+Addresses: https://github.com/karelzak/util-linux/issues/1015
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ libfdisk/src/script.c | 9 +++++++--
+ 1 file changed, 7 insertions(+), 2 deletions(-)
+
+diff --git a/libfdisk/src/script.c b/libfdisk/src/script.c
+index cc53c3b..8af2e54 100644
+--- a/libfdisk/src/script.c
++++ b/libfdisk/src/script.c
+@@ -953,12 +953,17 @@ static int partno_from_devname(char *s)
+ 	size_t sz;
+ 	char *end, *p;
+ 
++	if (!s || !*s)
++		return -1;
++
+ 	sz = rtrim_whitespace((unsigned char *)s);
+-	p = s + sz - 1;
++	end = p = s + sz;
+ 
+ 	while (p > s && isdigit(*(p - 1)))
+ 		p--;
+-
++	if (p == end)
++		return -1;
++	end = NULL;
+ 	errno = 0;
+ 	pno = strtol(p, &end, 10);
+ 	if (errno || !end || p == end)
+-- 
+1.8.3.1
+

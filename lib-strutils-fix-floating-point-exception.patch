@@ -1,0 +1,27 @@
+From 1186cdf336e9d29089de54ff59dba6d2ee1bd803 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Tue, 28 Apr 2020 12:28:59 +0200
+Subject: [PATCH 233/389] lib/strutils: fix floating point exception
+
+Addresses: https://github.com/karelzak/util-linux/issues/1017
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ lib/strutils.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/lib/strutils.c b/lib/strutils.c
+index e1629fb..609ef08 100644
+--- a/lib/strutils.c
++++ b/lib/strutils.c
+@@ -195,7 +195,7 @@ check_suffix:
+ 			frac /= 10;	/* remove last digit from frac */
+ 			frac_poz *= 10;
+ 
+-			if (seg)
++			if (seg && seg_div / seg)
+ 				x += frac_base / (seg_div / seg);
+ 		} while (frac);
+ 	}
+-- 
+1.8.3.1
+
