@@ -1,8 +1,8 @@
 %define compldir %{_datadir}/bash-completion/completions/
 
 Name:           util-linux
-Version:        2.34
-Release:        9
+Version:        2.35.2
+Release:        1
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -29,17 +29,16 @@ Conflicts:      initscripts < 9.79-4 bash-completion < 1:2.1-1 coreutils < 8.20 
 Conflicts:      e2fsprogs < 1.41.8-5 filesystem < 3
 
 Provides:       eject = 2.1.6 rfkill = 0.5
-Provides:       util-linux-ng = %{version}-%{release}
+Provides:       util-linux-ng = %{version}-%{release} hardlink = 1:1.3-9
 Provides:       /bin/dmesg /bin/kill /bin/more /bin/mount /bin/umount /sbin/blkid
 Provides:       /sbin/blockdev /sbin/findfs /sbin/fsck /sbin/nologin
-Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19
+Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19 hardlink <= 1:1.3-9
 
-Patch0000:      2.28-login-lastlog-create.patch
-Patch0001:      fdisk-fix-quit-dialog-for-non-libreadline-version.patch
-Patch0002:      libmount-move-already-mounted-code-to-separate-funct.patch
-Patch0003:      libmount-try-read-only-mount-on-write-protected-supe.patch
-Patch0004:      lscpu-Add-HiSilicon-aarch64-tsv110-cpupart.patch
-Patch0005:      lscpu-use-official-name-for-HiSilicon-tsv110.patch
+Patch0:      2.28-login-lastlog-create.patch
+Patch1:      libmount-move-already-mounted-code-to-separate-funct.patch
+Patch2:      libmount-try-read-only-mount-on-write-protected-supe.patch
+Patch3:      libmount-parser-fix-memory-leak-on-error-before-end-.patch
+Patch4:      tests-Fix-mountpoint-test-failure-in-build-chroots.patch
 
 %description
 The util-linux package contains a random collection of files that
@@ -134,6 +133,8 @@ development of %{name}.
 Summary:        Help package for ${name}
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
+Obsoletes:      hardlink-help <= 1:1.3-9
+Provides:       hardlink-help = 1:1.3-9
 
 %description help
 This package contains some doc and man help files for %{name}.
@@ -155,6 +156,7 @@ unset LINGUAS || :
   --enable-usrdir-path \
   --enable-write \
   --enable-raw \
+  --enable-hardlink \
   --with-python=2 \
   --with-systemd \
   --with-udev \
@@ -297,7 +299,7 @@ fi
 %{_bindir}/{flock,getopt,hexdump,ionice,ipcmk,ipcrm,ipcs,isosize,kill,last,lastb,logger,hardlink}
 %{_bindir}/{look,lsblk,lscpu,lsipc,lslocks,lslogins,lsmem,lsns,mcookie,mesg,more,mountpoint}
 %{_bindir}/{namei,nsenter,prlimit,raw,rename,renice,rev,script,scriptreplay,setarch,setpriv}
-%{_bindir}/{setsid,setterm,taskset,ul,unshare,utmpdump,uuidgen,uuidparse,wall,wdctl,whereis}
+%{_bindir}/{setsid,setterm,taskset,ul,unshare,utmpdump,uuidgen,uuidparse,wall,wdctl,whereis,scriptlive,hardlink}
 %{_sbindir}/{addpart,agetty,blkdiscard,blkid,blkzone,blockdev,chcpu,ctrlaltdel,delpart,fdisk}
 %{_sbindir}/{findfs,fsck,fsck.cramfs,fsck.minix,fsfreeze,fstrim,ldattach,losetup,mkfs,mkfs.cramfs}
 %{_sbindir}/{mkfs.minix,mkswap,nologin,partx,pivot_root,readprofile,resizepart,rfkill,rtcwake}
@@ -313,7 +315,7 @@ fi
 %{compldir}/{resizepart,rev,rfkill,rtcwake,runuser,script,scriptreplay,setarch}
 %{compldir}/{setpriv,setsid,setterm,su,swaplabel,swapoff,swapon,taskset,ul,unshare}
 %{compldir}/{utmpdump,uuidgen,uuidparse,wall,wdctl,whereis,wipefs,write,zramctl}
-%{compldir}/{fdformat,hwclock,cfdisk,sfdisk}
+%{compldir}/{fdformat,hwclock,cfdisk,sfdisk,scriptlive}
 
 %files -n libfdisk
 %license Documentation/licenses/COPYING.LGPL-2.1* libfdisk/COPYING
@@ -365,13 +367,12 @@ fi
 %exclude %{_datadir}/doc/util-linux/getopt/*
 %doc README NEWS Documentation/deprecated.txt
 %doc %attr(0644,-,-) misc-utils/getopt-*.{bash,tcsh}
-%exclude %{_mandir}/man1/hardlink.1*
 %{_mandir}/man1/{chfn.1*,chsh.1*,cal.1*,chrt.1*,col.1*,colcrt.1*,colrm.1*,column.1*,dmesg.1*,eject.1*}
 %{_mandir}/man1/{fallocate.1*,fincore.1*,flock.1*,getopt.1*,hexdump.1*,ionice.1*,ipcmk.1*,ipcrm.1*,ipcs.1*}
 %{_mandir}/man1/{kill.1*,last.1*,lastb.1*,logger.1*,login.1*,look.1*,lscpu.1*,lsipc.1*,lslogins.1*,lsmem.1*}
 %{_mandir}/man1/{mcookie.1*,mesg.1*,more.1*,mountpoint.1*,namei.1*,nsenter.1*,prlimit.1*,rename.1*,renice.1*}
 %{_mandir}/man1/{rev.1*,runuser.1*,script.1*,scriptreplay.1*,setpriv.1*,setsid.1*,setterm.1*,su.1*,taskset.1*}
-%{_mandir}/man1/{ul.1*,unshare.1*,utmpdump.1.gz,uuidgen.1*,uuidparse.1*,wall.1*,whereis.1*,write.1*,choom.1*}
+%{_mandir}/man1/{ul.1*,unshare.1*,utmpdump.1.gz,uuidgen.1*,uuidparse.1*,wall.1*,whereis.1*,write.1*,choom.1*,scriptlive*,hardlink.1*}
 %{_mandir}/man3/{libblkid.3*,uuid.3*,uuid_clear.3*,uuid_compare.3*,uuid_copy.3*,uuid_generate.3*,uuid_generate_random.3*}
 %{_mandir}/man3/{uuid_generate_time_safe.3*,uuid_is_null.3*,uuid_parse.3*,uuid_time.3*,uuid_unparse.3*,uuid_generate_time.3*}
 %{_mandir}/man5/{fstab.5*,terminal-colors.d.5*,adjtime_config.5.*}
@@ -384,6 +385,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Thu Jul 23 2020 yang_zhuang_zhuang <yangzhuangzhuang1@huawei.com> - 2.35.2-1
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:update version to 2.35.2
+
 * Mon Jun 29 2020 Liquor <lirui130@huawei.com> - 2.34-9
 - Type:bugfix
 - ID:NA
