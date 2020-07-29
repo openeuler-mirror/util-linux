@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.35.1
-Release:        2
+Release:        3
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -67,6 +67,7 @@ Patch29:        sfdisk-only-report-I-O-errors-on-move-data.patch
 Patch30:        umount-don-t-try-it-as-non-suid-if-not-found-mountin.patch
 Patch31:        write-fix-potential-string-overflow.patch
 Patch32:        do-not-excute-mountpoint-test.patch
+Patch33:        libmount-parser-fix-memory-leak-on-error-before-end-.patch
 
 %description
 The util-linux package contains a random collection of files that
@@ -411,6 +412,9 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Tue Jul 28 2020 shenyangyang<shenyangyang4@huawei.com> - 2.35.1-3
+- libmount parser fix memory leak on error before end
+
 * Wed Jul 1 2020 liuchengaung<liuchenguang4@huawei.com> - 2.35.1-2
 - quality enhancement synchronization github patch
 
