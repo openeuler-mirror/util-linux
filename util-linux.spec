@@ -1,8 +1,8 @@
 %define compldir %{_datadir}/bash-completion/completions/
 
 Name:           util-linux
-Version:        2.35.1
-Release:        3
+Version:        2.35.2
+Release:        1
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -37,37 +37,8 @@ Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19 sysvinit-tools
 Patch0:         2.28-login-lastlog-create.patch
 Patch1:         libmount-move-already-mounted-code-to-separate-funct.patch
 Patch2:         libmount-try-read-only-mount-on-write-protected-supe.patch
-Patch3:         lscpu-use-official-name-for-HiSilicon-tsv110.patch
-Patch4:         Fix-off-by-one-when-checking-dev-mapper-path.patch
-Patch5:         cal-Correctly-center-the-year.patch
-Patch6:         cal-correctly-set-the-week-width.patch
-Patch7:         clang-tidy-use-ceil.patch
-Patch8:         findmnt-make-xalloc-use-mroe-robust.patch
-Patch9:         fsck.cramfs-fix-macro-usage.patch
-Patch10:        hwclock-fix-audit-exit-status.patch
-Patch11:        kill-include-sys-types.h-before-checking-SYS_pidfd_s.patch
-Patch12:        lib-mangle-check-for-the-NULL-string-argument.patch
-Patch13:        lib-strutils-fix-floating-point-exception.patch
-Patch14:        libfdisk-fix-alignment-logic-for-tiny-partitions.patch
-Patch15:        tests-Fix-for-misc-fallocate-test-build-failure.patch
-Patch16:        libfdisk-fix-partition-calculation-for-BLKPG_-ioctls.patch
-Patch17:        libfdisk-make-sure-we-check-for-maximal-number-of-pa.patch
-Patch18:        libfdisk-remove-unwanted-assert.patch
-Patch19:        libfdisk-script-accept-sector-size-ignore-unknown-he.patch
-Patch20:        libfdisk-script-fix-memory-leak.patch
-Patch21:        libfdisk-script-fix-partno_from_devname.patch
-Patch22:        libfdisk-script-fix-segmentation-fault.patch
-Patch23:        libmount-use-mnt_stat_mountpoint-on-more-places.patch
-Patch24:        libuuid-ensure-variable-is-initialized-cppcheck.patch
-Patch25:        lsblk-Fall-back-to-ID_SERIAL.patch 
-Patch26:        lscpu-fix-SIGSEGV-on-archs-without-drawers-books.patch
-Patch27:        script-fix-minor-warning.patch
-Patch28:        sfdisk-fix-ref-counting-for-the-script.patch
-Patch29:        sfdisk-only-report-I-O-errors-on-move-data.patch
-Patch30:        umount-don-t-try-it-as-non-suid-if-not-found-mountin.patch
-Patch31:        write-fix-potential-string-overflow.patch
-Patch32:        do-not-excute-mountpoint-test.patch
-Patch33:        libmount-parser-fix-memory-leak-on-error-before-end-.patch
+Patch3:         libmount-parser-fix-memory-leak-on-error-before-end-.patch
+Patch4:         tests-Fix-mountpoint-test-failure-in-build-chroots.patch
 
 %description
 The util-linux package contains a random collection of files that
@@ -412,6 +383,9 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Wed Jul 29 2020 fangxiuning<fangxiuning@huawei.com> - 2.35.2-1
+- Update version to 2.35.2
+
 * Tue Jul 28 2020 shenyangyang<shenyangyang4@huawei.com> - 2.35.1-3
 - libmount parser fix memory leak on error before end
 
