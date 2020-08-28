@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.35.2
-Release:        1
+Release:        2
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -299,7 +299,7 @@ fi
 %{_bindir}/{flock,getopt,hexdump,ionice,ipcmk,ipcrm,ipcs,isosize,kill,last,lastb,logger,hardlink}
 %{_bindir}/{look,lsblk,lscpu,lsipc,lslocks,lslogins,lsmem,lsns,mcookie,mesg,more,mountpoint}
 %{_bindir}/{namei,nsenter,prlimit,raw,rename,renice,rev,script,scriptreplay,setarch,setpriv}
-%{_bindir}/{setsid,setterm,taskset,ul,unshare,utmpdump,uuidgen,uuidparse,wall,wdctl,whereis,scriptlive,hardlink}
+%{_bindir}/{setsid,setterm,taskset,ul,unshare,utmpdump,uuidgen,uuidparse,wall,wdctl,whereis,scriptlive}
 %{_sbindir}/{addpart,agetty,blkdiscard,blkid,blkzone,blockdev,chcpu,ctrlaltdel,delpart,fdisk}
 %{_sbindir}/{findfs,fsck,fsck.cramfs,fsck.minix,fsfreeze,fstrim,ldattach,losetup,mkfs,mkfs.cramfs}
 %{_sbindir}/{mkfs.minix,mkswap,nologin,partx,pivot_root,readprofile,resizepart,rfkill,rtcwake}
@@ -385,6 +385,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Fri Aug 28 2020 yang_zhuang_zhuang <yangzhuangzhuang1@huawei.com> - 2.35.2-2
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:fix an issue that hardlink was packaged twice
+
 * Thu Jul 23 2020 yang_zhuang_zhuang <yangzhuangzhuang1@huawei.com> - 2.35.2-1
 - Type:enhancement
 - ID:NA
