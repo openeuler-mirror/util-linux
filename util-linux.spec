@@ -1,12 +1,13 @@
 %define compldir %{_datadir}/bash-completion/completions/
+%global upstream_major 2.35
 
 Name:           util-linux
 Version:        2.35.2
-Release:        2
+Release:        3
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
-Source0:        https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{version}/%{name}-%{version}.tar.xz
+Source0:        https://mirrors.edge.kernel.org/pub/linux/utils/util-linux/v%{upstream_major}/%{name}-%{version}.tar.xz
 Source1:        util-linux-login.pamd
 Source2:        util-linux-remote.pamd
 Source3:        util-linux-chsh-chfn.pamd
@@ -385,6 +386,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Tue Sep 8 2020 wangchen <wangchen137@huawei.com> - 2.35.2-3
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:modify the URL of Source0
+
 * Fri Aug 28 2020 yang_zhuang_zhuang <yangzhuangzhuang1@huawei.com> - 2.35.2-2
 - Type:bugfix
 - ID:NA
