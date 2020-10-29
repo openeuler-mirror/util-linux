@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        2.35.2
-Release:        3
+Release:        4
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -19,7 +19,7 @@ Source8:        util-linux-runuser.pamd
 Source9:        util-linux-runuser-l.pamd
 
 BuildRequires:  audit-libs-devel >= 1.0.6 gettext-devel libselinux-devel ncurses-devel pam-devel zlib-devel popt-devel
-BuildRequires:  libutempter-devel systemd-devel systemd libuser-devel libcap-ng-devel python-devel gcc gdb
+BuildRequires:  libutempter-devel systemd-devel systemd libuser-devel libcap-ng-devel python3-devel gcc gdb
 
 Requires(post): coreutils
 Requires:       pam >= 1.1.3-7, /etc/pam.d/system-auth audit-libs >= 1.0.6
@@ -110,12 +110,12 @@ Requires: util-linux = %{version}-%{release}
 %description user
 chfn and chsh utilities with dependence on libuser
 
-%package -n python-libmount
+%package -n python3-libmount
 Summary:        Python Package for the libmount library pack
 Requires:       libmount = %{version}-%{release}
 License:        LGPLv2+
 
-%description -n python-libmount
+%description -n python3-libmount
 This package provides python support for users to use the libmount library
 to work with mount tables and mount filesystems.
 
@@ -158,7 +158,7 @@ unset LINGUAS || :
   --enable-write \
   --enable-raw \
   --enable-hardlink \
-  --with-python=2 \
+  --with-python=3 \
   --with-systemd \
   --with-udev \
   --with-selinux \
@@ -354,7 +354,7 @@ fi
 %{compldir}/chfn
 %{compldir}/chsh
 
-%files -n python-libmount
+%files -n python3-libmount
 %{!?_licensedir:%global license %%doc}
 %license libmount/COPYING
 %{_libdir}/python*/site-packages/libmount/
@@ -386,6 +386,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Thu Oct 29 2020 Liquor <lirui130@huawei.com> - 2.35.2-4
+- Type:requirement
+- ID:NA
+- SUG:NA
+- DESC:remove python2
+
 * Tue Sep 8 2020 wangchen <wangchen137@huawei.com> - 2.35.2-3
 - Type:enhancement
 - ID:NA
