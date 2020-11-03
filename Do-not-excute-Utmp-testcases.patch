@@ -1,0 +1,26 @@
+From b629f0e02c2ac6283012131404380acc56beb5e8 Mon Sep 17 00:00:00 2001
+From: yang_zhuang_zhuang <yangzhuangzhuang1@huaweo.com>
+Date: Mon, 2 Nov 2020 17:17:13 +0800
+Subject: Do not excute Utmp testcases.
+
+The compilation environment and test cases are vulnerable.As a result,the Utmp testcase fail to be compiled.Therefore,the Utmp testcases are commented out.
+---
+ tests/commands.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/commands.sh b/tests/commands.sh
+index 5f34452..ad3edb2 100644
+--- a/tests/commands.sh
++++ b/tests/commands.sh
+@@ -100,7 +100,7 @@ TS_CMD_SWAPOFF=${TS_CMD_SWAPOFF:-"${ts_commandsdir}swapoff"}
+ TS_CMD_SWAPON=${TS_CMD_SWAPON:-"${ts_commandsdir}swapon"}
+ TS_CMD_UL=${TS_CMD_UL-"${ts_commandsdir}ul"}
+ TS_CMD_UMOUNT=${TS_CMD_UMOUNT:-"${ts_commandsdir}umount"}
+-TS_CMD_UTMPDUMP=${TS_CMD_UTMPDUMP-"${ts_commandsdir}utmpdump"}
++#TS_CMD_UTMPDUMP=${TS_CMD_UTMPDUMP-"${ts_commandsdir}utmpdump"}
+ TS_CMD_UUIDD=${TS_CMD_UUIDD-"${ts_commandsdir}uuidd"}
+ TS_CMD_UUIDGEN=${TS_CMD_UUIDGEN-"${ts_commandsdir}uuidgen"}
+ TS_CMD_UUIDPARSE=${TS_CMD_UUIDPARSE-"${ts_commandsdir}uuidparse"}
+-- 
+1.8.3.1
+
