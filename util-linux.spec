@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.35.2
-Release:        1
+Release:        2
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -39,6 +39,7 @@ Patch1:      libmount-move-already-mounted-code-to-separate-funct.patch
 Patch2:      libmount-try-read-only-mount-on-write-protected-supe.patch
 Patch3:      libmount-parser-fix-memory-leak-on-error-before-end-.patch
 Patch4:      tests-Fix-mountpoint-test-failure-in-build-chroots.patch
+Patch5:      Do-not-excute-Utmp-testcases.patch
 
 %description
 The util-linux package contains a random collection of files that
@@ -292,6 +293,7 @@ fi
 %attr(4755,root,root) %{_bindir}/su
 %attr(755,root,root) %{_bindir}/login
 %attr(2755,root,tty) %{_bindir}/write
+%attr(2555,root,tty) %{_bindir}/wall
 %ghost %attr(0644,root,root) %verify(not md5 size mtime) /var/log/lastlog
 %ghost %verify(not md5 size mtime) %config(noreplace,missingok) /etc/mtab
 %{_unitdir}/fstrim.*
@@ -299,7 +301,7 @@ fi
 %{_bindir}/{flock,getopt,hexdump,ionice,ipcmk,ipcrm,ipcs,isosize,kill,last,lastb,logger,hardlink}
 %{_bindir}/{look,lsblk,lscpu,lsipc,lslocks,lslogins,lsmem,lsns,mcookie,mesg,more,mountpoint}
 %{_bindir}/{namei,nsenter,prlimit,raw,rename,renice,rev,script,scriptreplay,setarch,setpriv}
-%{_bindir}/{setsid,setterm,taskset,ul,unshare,utmpdump,uuidgen,uuidparse,wall,wdctl,whereis,scriptlive,hardlink}
+%{_bindir}/{setsid,setterm,taskset,ul,unshare,utmpdump,uuidgen,uuidparse,wdctl,whereis,scriptlive,hardlink}
 %{_sbindir}/{addpart,agetty,blkdiscard,blkid,blkzone,blockdev,chcpu,ctrlaltdel,delpart,fdisk}
 %{_sbindir}/{findfs,fsck,fsck.cramfs,fsck.minix,fsfreeze,fstrim,ldattach,losetup,mkfs,mkfs.cramfs}
 %{_sbindir}/{mkfs.minix,mkswap,nologin,partx,pivot_root,readprofile,resizepart,rfkill,rtcwake}
@@ -385,6 +387,13 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Sun Nov 28 2020 yangzhuangzhuang <yangzhuangzhuang1@huawei.com> - 2.35.2-2
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:have wall not write to non-ttys(#65412)
+       Do not excute Utmp testcases
+
 * Thu Jul 23 2020 yang_zhuang_zhuang <yangzhuangzhuang1@huawei.com> - 2.35.2-1
 - Type:enhancement
 - ID:NA
