@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        2.35.2
-Release:        2
+Release:        3
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -40,6 +40,8 @@ Patch1:         libmount-move-already-mounted-code-to-separate-funct.patch
 Patch2:         libmount-try-read-only-mount-on-write-protected-supe.patch
 Patch3:         libmount-parser-fix-memory-leak-on-error-before-end-.patch
 Patch4:         tests-Fix-mountpoint-test-failure-in-build-chroots.patch
+
+Patch9000:	Add-check-to-resolve-uname26-version-test-failed.patch
 
 %description
 The util-linux package contains a random collection of files that
@@ -384,6 +386,9 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Thu Dec 17 2020 Liquor <lirui130@huawei.com> - 2.35.2-3
+- Add check to resolve uname26-version test failed
+
 * Tue Sep 8 2020 wangchen<wangchen137@huawei.com> - 2.35.2-2
 - Modify the URL of Source0
 
