@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.35.2
-Release:        3
+Release:        4
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -389,6 +389,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Mon Jan 18 2021 Liquor <lirui130@huawei.com> - 2.35.2-4
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:Remove pam_console dependency
+
 * Thu Dec 17 2020 Liquor <lirui130@huawei.com> - 2.35.2-3
 - Type:bugfix
 - ID:NA
