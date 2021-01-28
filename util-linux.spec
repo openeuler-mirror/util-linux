@@ -2,8 +2,8 @@
 %global upstream_major 2.36
 
 Name:           util-linux
-Version:        2.36
-Release:        4
+Version:        2.36.1
+Release:        1
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -36,8 +36,7 @@ Provides:       /sbin/blockdev /sbin/findfs /sbin/fsck /sbin/nologin
 Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19 hardlink <= 1:1.3-9
 
 Patch0:         2.36-login-lastlog-create.patch
-Patch1:         0001-libfdisk-fix-last-free-sector-detection-if-partition.patch
-Patch2:         Do-not-excute-Utmp-testcases.patch
+Patch1:         Do-not-excute-Utmp-testcases.patch
 
 Patch9000:	Add-check-to-resolve-uname26-version-test-failed.patch
 
@@ -387,6 +386,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Tue Jan 26 2021 yangzhuangzhuang <yangzhuangzhuang1@huawei.com> - 2.36.1-1
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:update version to 2.36.1
+
 * Mon Jan 18 2021 Liquor <lirui130@huawei.com> - 2.36-4
 - Type:bugfix
 - ID:NA
