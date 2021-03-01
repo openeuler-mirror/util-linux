@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        2.36.1
-Release:        1
+Release:        2
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -37,6 +37,9 @@ Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19 hardlink <= 1:
 
 Patch0:         2.36-login-lastlog-create.patch
 Patch1:         Do-not-excute-Utmp-testcases.patch
+
+Patch2:         backport-libfdisk-make-fdisk_partname-more-robust.patch
+Patch3:         backport-libmount-fix-tab-parser-for-badly-terminated-lines.patch
 
 Patch9000:	Add-check-to-resolve-uname26-version-test-failed.patch
 
@@ -386,6 +389,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Mon Mar 1 2021 yangzhuangzhuang <yangzhuangzhuang1@huawei.com> - 2.36.1-2
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:Fix heap-buffer-overflow in fdisk_partname
+
 * Tue Jan 26 2021 yangzhuangzhuang <yangzhuangzhuang1@huawei.com> - 2.36.1-1
 - Type:enhancement
 - ID:NA
