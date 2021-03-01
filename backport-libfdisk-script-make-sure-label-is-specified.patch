@@ -1,0 +1,68 @@
+From 255f5f4c770ebd46a38b58975bd33e33ae87ed24 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Wed, 12 Aug 2020 15:52:53 +0200
+Subject: [PATCH] libfdisk: (script) make sure label is specified
+
+and unref type if already specified (unlikely, but be paranoid)
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ libfdisk/src/parttype.c |  2 +-
+ libfdisk/src/script.c   | 10 ++++------
+ 2 files changed, 5 insertions(+), 7 deletions(-)
+
+diff --git a/libfdisk/src/parttype.c b/libfdisk/src/parttype.c
+index e3eb0cffa..ec5debca7 100644
+--- a/libfdisk/src/parttype.c
++++ b/libfdisk/src/parttype.c
+@@ -438,7 +438,7 @@ struct fdisk_parttype *fdisk_label_advparse_parttype(
+ 	struct fdisk_parttype *res = NULL;
+ 	unsigned int code = 0;
+ 
+-	if (!lb->nparttypes)
++	if (!lb || lb->nparttypes)
+ 		return NULL;
+ 
+ 	DBG(LABEL, ul_debugobj(lb, "parsing '%s' (%s) type", str, lb->name));
+diff --git a/libfdisk/src/script.c b/libfdisk/src/script.c
+index 051fa326e..d18ba5737 100644
+--- a/libfdisk/src/script.c
++++ b/libfdisk/src/script.c
+@@ -1075,7 +1075,7 @@ static int parse_line_nameval(struct fdisk_script *dp, char *s)
+ 
+ 		} else if (!strncasecmp(p, "type=", 5) ||
+ 			   !strncasecmp(p, "Id=", 3)) {		/* backward compatibility */
+-			char *type;
++			char *type = NULL;
+ 
+ 			p += ((*p == 'I' || *p == 'i') ? 3 : 5); /* "Id=", "type=" */
+ 
+@@ -1083,14 +1083,12 @@ static int parse_line_nameval(struct fdisk_script *dp, char *s)
+ 			if (rc)
+ 				break;
+ 
++			fdisk_unref_parttype(pa->type);
+ 			pa->type = fdisk_label_advparse_parttype(script_get_label(dp),
+ 					type, FDISK_SCRIPT_PARTTYPE_PARSE_FLAGS);
+ 			free(type);
+-
+-			if (!pa->type) {
++			if (!pa->type)
+ 				rc = -EINVAL;
+-				break;
+-			}
+ 		} else {
+ 			DBG(SCRIPT, ul_debugobj(dp, "script parse error: unknown field '%s'", p));
+ 			rc = -EINVAL;
+@@ -1201,10 +1199,10 @@ static int parse_line_valcommas(struct fdisk_script *dp, char *s)
+ 			if (rc)
+ 				break;
+ 
++			fdisk_unref_parttype(pa->type);
+ 			pa->type = fdisk_label_advparse_parttype(script_get_label(dp),
+ 						str, FDISK_SCRIPT_PARTTYPE_PARSE_FLAGS);
+ 			free(str);
+-
+ 			if (!pa->type)
+ 				rc = -EINVAL;
+ 			break;

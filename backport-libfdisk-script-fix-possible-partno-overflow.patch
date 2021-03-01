@@ -1,0 +1,42 @@
+From 1f50296c0f2384f474e3bbd92926edea53c3bace Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Fri, 14 Aug 2020 11:13:50 +0200
+Subject: [PATCH] libfdisk: (script) fix possible partno overflow
+
+Addresses: https://oss-fuzz.com/testcase-detail/5740890480705536
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ libfdisk/src/script.c | 11 ++++++++---
+ 1 file changed, 8 insertions(+), 3 deletions(-)
+
+diff --git a/libfdisk/src/script.c b/libfdisk/src/script.c
+index 74ff43b73..37a5a3edc 100644
+--- a/libfdisk/src/script.c
++++ b/libfdisk/src/script.c
+@@ -959,7 +959,7 @@ static int next_string(char **s, char **str)
+ 
+ static int partno_from_devname(char *s)
+ {
+-	int pno;
++	intmax_t num;
+ 	size_t sz;
+ 	char *end, *p;
+ 
+@@ -975,10 +975,15 @@ static int partno_from_devname(char *s)
+ 		return -1;
+ 	end = NULL;
+ 	errno = 0;
+-	pno = strtol(p, &end, 10);
++	num = strtol(p, &end, 10);
+ 	if (errno || !end || p == end)
+ 		return -1;
+-	return pno - 1;
++
++	if (num < INT32_MIN || num > INT32_MAX) {
++		errno = ERANGE;
++		return -1;
++	}
++	return num - 1;
+ }
+ 
+ #define FDISK_SCRIPT_PARTTYPE_PARSE_FLAGS \
