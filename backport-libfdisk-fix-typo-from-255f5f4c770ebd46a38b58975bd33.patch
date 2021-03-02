@@ -1,0 +1,24 @@
+From 3b87a9af494b4ecc2ed3aa544f1a2f8df6789354 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Wed, 12 Aug 2020 19:48:47 +0200
+Subject: [PATCH] libfdisk: fix typo from
+ 255f5f4c770ebd46a38b58975bd33e33ae87ed24
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ libfdisk/src/parttype.c | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/libfdisk/src/parttype.c b/libfdisk/src/parttype.c
+index ec5debca7..72c5e3613 100644
+--- a/libfdisk/src/parttype.c
++++ b/libfdisk/src/parttype.c
+@@ -438,7 +438,7 @@ struct fdisk_parttype *fdisk_label_advparse_parttype(
+ 	struct fdisk_parttype *res = NULL;
+ 	unsigned int code = 0;
+ 
+-	if (!lb || lb->nparttypes)
++	if (!lb || !lb->nparttypes)
+ 		return NULL;
+ 
+ 	DBG(LABEL, ul_debugobj(lb, "parsing '%s' (%s) type", str, lb->name));

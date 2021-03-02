@@ -1,0 +1,78 @@
+From 8bbc11f12ffb7adfc188b7b8885e74d40bd54713 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Wed, 12 Aug 2020 15:59:38 +0200
+Subject: [PATCH] libfdisk: (script) don't use sector size if not specified
+
+This is probably bad script API use, but better be safe than sorry.
+
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ libfdisk/src/script.c | 30 ++++++++++++++++++++++++------
+ 1 file changed, 24 insertions(+), 6 deletions(-)
+
+diff --git a/libfdisk/src/script.c b/libfdisk/src/script.c
+index d18ba5737..2a3d1b818 100644
+--- a/libfdisk/src/script.c
++++ b/libfdisk/src/script.c
+@@ -1032,8 +1032,13 @@ static int parse_line_nameval(struct fdisk_script *dp, char *s)
+ 			p += 6;
+ 			rc = next_number(&p, &num, &pow);
+ 			if (!rc) {
+-				if (pow)	/* specified as <num><suffix> */
++				if (pow) {	/* specified as <num><suffix> */
++					if (!dp->cxt->sector_size) {
++						rc = -EINVAL;
++						break;
++					}
+ 					num /= dp->cxt->sector_size;
++				}
+ 				fdisk_partition_set_start(pa, num);
+ 				fdisk_partition_start_follow_default(pa, 0);
+ 			}
+@@ -1043,9 +1048,13 @@ static int parse_line_nameval(struct fdisk_script *dp, char *s)
+ 			p += 5;
+ 			rc = next_number(&p, &num, &pow);
+ 			if (!rc) {
+-				if (pow)	/* specified as <num><suffix> */
++				if (pow) {	/* specified as <num><suffix> */
++					if (!dp->cxt->sector_size) {
++						rc = -EINVAL;
++						break;
++					}
+ 					num /= dp->cxt->sector_size;
+-				else		/* specified as number of sectors */
++				} else		/* specified as number of sectors */
+ 					fdisk_partition_size_explicit(pa, 1);
+ 				fdisk_partition_set_size(pa, num);
+ 				fdisk_partition_end_follow_default(pa, 0);
+@@ -1159,8 +1168,13 @@ static int parse_line_valcommas(struct fdisk_script *dp, char *s)
+ 
+ 				rc = next_number(&p, &num, &pow);
+ 				if (!rc) {
+-					if (pow)	/* specified as <num><suffix> */
++					if (pow) {	/* specified as <num><suffix> */
++						if (!dp->cxt->sector_size) {
++							rc = -EINVAL;
++							break;
++						}
+ 						num /= dp->cxt->sector_size;
++					}
+ 					fdisk_partition_set_start(pa, num);
+ 					pa->movestart = sign == TK_MINUS ? FDISK_MOVE_DOWN :
+ 							sign == TK_PLUS  ? FDISK_MOVE_UP :
+@@ -1179,9 +1193,13 @@ static int parse_line_valcommas(struct fdisk_script *dp, char *s)
+ 				int pow = 0;
+ 				rc = next_number(&p, &num, &pow);
+ 				if (!rc) {
+-					if (pow) /* specified as <size><suffix> */
++					if (pow) { /* specified as <size><suffix> */
++						if (!dp->cxt->sector_size) {
++							rc = -EINVAL;
++							break;
++						}
+ 						num /= dp->cxt->sector_size;
+-					else	 /* specified as number of sectors */
++					} else	 /* specified as number of sectors */
+ 						fdisk_partition_size_explicit(pa, 1);
+ 					fdisk_partition_set_size(pa, num);
+ 					pa->resize = sign == TK_MINUS ? FDISK_RESIZE_REDUCE :
