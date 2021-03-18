@@ -1,0 +1,626 @@
+From ad296391f932764de697dd0bfcfa6f529b69a6cb Mon Sep 17 00:00:00 2001
+From: Rosen Penev <rosenp@gmail.com>
+Date: Sat, 18 Apr 2020 22:32:29 -0700
+Subject: [PATCH] [clang-tidy] fix wrong *cmp usage
+
+Found with bugprone-suspicious-string-compare
+
+Signed-off-by: Rosen Penev <rosenp@gmail.com>
+---
+ disk-utils/fsck.c               | 10 +++++-----
+ disk-utils/fsck.minix.c         |  8 ++++----
+ disk-utils/partx.c              |  2 +-
+ lib/ismounted.c                 |  2 +-
+ lib/loopdev.c                   |  2 +-
+ lib/swapprober.c                |  2 +-
+ lib/sysfs.c                     |  2 +-
+ libblkid/src/devname.c          | 14 +++++++-------
+ libblkid/src/partitions/atari.c |  2 +-
+ libblkid/src/superblocks/ntfs.c |  4 ++--
+ libblkid/src/superblocks/vfat.c |  2 +-
+ libblkid/src/tag.c              |  2 +-
+ libfdisk/src/sgi.c              |  2 +-
+ libmount/src/context.c          |  2 +-
+ libmount/src/context_umount.c   |  2 +-
+ libmount/src/optmap.c           |  2 +-
+ libmount/src/optstr.c           |  2 +-
+ libmount/src/tab_diff.c         |  2 +-
+ libmount/src/tab_parse.c        |  2 +-
+ login-utils/login.c             |  2 +-
+ login-utils/su-common.c         |  2 +-
+ misc-utils/findmnt.c            |  2 +-
+ misc-utils/hardlink.c           |  2 +-
+ misc-utils/lsblk-properties.c   |  2 +-
+ sys-utils/chmem.c               |  6 +++---
+ sys-utils/lscpu-arm.c           |  2 +-
+ sys-utils/lscpu.c               |  4 ++--
+ sys-utils/lsmem.c               |  4 ++--
+ sys-utils/setarch.c             | 10 +++++-----
+ term-utils/agetty.c             |  4 ++--
+ term-utils/write.c              |  2 +-
+ tests/helpers/test_strerror.c   |  2 +-
+ text-utils/hexdump-display.c    |  2 +-
+ 33 files changed, 56 insertions(+), 56 deletions(-)
+
+diff --git a/disk-utils/fsck.c b/disk-utils/fsck.c
+index 8391e5d..fda80a6 100644
+--- a/disk-utils/fsck.c
++++ b/disk-utils/fsck.c
+@@ -819,10 +819,10 @@ static struct fsck_instance *wait_one(int flags)
+ 		for (inst2 = instance_list; inst2; inst2 = inst2->next) {
+ 			if (inst2->flags & FLAG_DONE)
+ 				continue;
+-			if (strcmp(inst2->type, "ext2") &&
++			if (strcmp(inst2->type, "ext2") != 0 &&
+ 			    strcmp(inst2->type, "ext3") &&
+-			    strcmp(inst2->type, "ext4") &&
+-			    strcmp(inst2->type, "ext4dev"))
++			    strcmp(inst2->type, "ext4") != 0 &&
++			    strcmp(inst2->type, "ext4dev") != 0)
+ 				continue;
+ 			/*
+ 			 * If we've just started the fsck, wait a tiny
+@@ -903,8 +903,8 @@ static int fsck_device(struct libmnt_fs *fs, int interactive)
+ 
+ 	if (type && strcmp(type, "auto") != 0)
+ 		;
+-	else if (fstype && strncmp(fstype, "no", 2) &&
+-	    strncmp(fstype, "opts=", 5) && strncmp(fstype, "loop", 4) &&
++	else if (fstype && strncmp(fstype, "no", 2) != 0 &&
++	    strncmp(fstype, "opts=", 5) != 0 && strncmp(fstype, "loop", 4) != 0 &&
+ 	    !strchr(fstype, ','))
+ 		type = fstype;
+ 	else
+diff --git a/disk-utils/fsck.minix.c b/disk-utils/fsck.minix.c
+index d3725ee..bd44f5b 100644
+--- a/disk-utils/fsck.minix.c
++++ b/disk-utils/fsck.minix.c
+@@ -976,7 +976,7 @@ check_file(struct minix_inode *dir, unsigned int offset) {
+ 	inode = get_inode(ino);
+ 	name_depth--;
+ 	if (!offset) {
+-		if (!inode || strcmp(".", name)) {
++		if (!inode || strcmp(".", name) != 0) {
+ 			get_current_name();
+ 			printf(_("%s: bad directory: '.' isn't first\n"),
+ 			       current_name);
+@@ -985,7 +985,7 @@ check_file(struct minix_inode *dir, unsigned int offset) {
+ 			return;
+ 	}
+ 	if (offset == dirsize) {
+-		if (!inode || strcmp("..", name)) {
++		if (!inode || strcmp("..", name) != 0) {
+ 			get_current_name();
+ 			printf(_("%s: bad directory: '..' isn't second\n"),
+ 			       current_name);
+@@ -1049,7 +1049,7 @@ check_file2(struct minix2_inode *dir, unsigned int offset) {
+ 	inode = get_inode2(ino);
+ 	name_depth--;
+ 	if (!offset) {
+-		if (!inode || strcmp(".", name)) {
++		if (!inode || strcmp(".", name) != 0) {
+ 			get_current_name();
+ 			printf(_("%s: bad directory: '.' isn't first\n"),
+ 			       current_name);
+@@ -1058,7 +1058,7 @@ check_file2(struct minix2_inode *dir, unsigned int offset) {
+ 			return;
+ 	}
+ 	if (offset == dirsize) {
+-		if (!inode || strcmp("..", name)) {
++		if (!inode || strcmp("..", name) != 0) {
+ 			get_current_name();
+ 			printf(_("%s: bad directory: '..' isn't second\n"),
+ 			       current_name);
+diff --git a/disk-utils/partx.c b/disk-utils/partx.c
+index 4f73c5f..07b3e28 100644
+--- a/disk-utils/partx.c
++++ b/disk-utils/partx.c
+@@ -245,7 +245,7 @@ static int get_max_partno(const char *disk, dev_t devno)
+ 		if (d->d_type != DT_DIR && d->d_type != DT_UNKNOWN)
+ 			continue;
+ #endif
+-		if (strncmp(parent, d->d_name, strlen(parent)))
++		if (strncmp(parent, d->d_name, strlen(parent)) != 0)
+ 			continue;
+ 		snprintf(path, sizeof(path), "%s/partition", d->d_name);
+ 
+diff --git a/lib/ismounted.c b/lib/ismounted.c
+index fe4c329..9a20b23 100644
+--- a/lib/ismounted.c
++++ b/lib/ismounted.c
+@@ -272,7 +272,7 @@ static int is_swap_device(const char *file)
+ 	/* Skip the first line */
+ 	if (!fgets(buf, sizeof(buf), f))
+ 		goto leave;
+-	if (*buf && strncmp(buf, "Filename\t", 9))
++	if (*buf && strncmp(buf, "Filename\t", 9) != 0)
+ 		/* Linux <=2.6.19 contained a bug in the /proc/swaps
+ 		 * code where the header would not be displayed
+ 		 */
+diff --git a/lib/loopdev.c b/lib/loopdev.c
+index 76eac7b..70cc0c2 100644
+--- a/lib/loopdev.c
++++ b/lib/loopdev.c
+@@ -1806,7 +1806,7 @@ int loopdev_count_by_backing_file(const char *filename, char **loopdev)
+ 	while(loopcxt_next(&lc) == 0) {
+ 		char *backing = loopcxt_get_backing_file(&lc);
+ 
+-		if (!backing || strcmp(backing, filename)) {
++		if (!backing || strcmp(backing, filename) != 0) {
+ 			free(backing);
+ 			continue;
+ 		}
+diff --git a/lib/swapprober.c b/lib/swapprober.c
+index 5a4b112..aaf9ad0 100644
+--- a/lib/swapprober.c
++++ b/lib/swapprober.c
+@@ -37,7 +37,7 @@ blkid_probe get_swap_prober(const char *devname)
+ 		/* Only the SWAPSPACE2 is supported. */
+ 		if (blkid_probe_lookup_value(pr, "VERSION", &version, NULL) == 0
+ 		    && version
+-		    && strcmp(version, stringify_value(SWAP_VERSION)))
++		    && strcmp(version, stringify_value(SWAP_VERSION)) != 0)
+ 			warnx(_("%s: unsupported swap version '%s'"),
+ 						devname, version);
+ 		else
+diff --git a/lib/sysfs.c b/lib/sysfs.c
+index ce94400..227a1e9 100644
+--- a/lib/sysfs.c
++++ b/lib/sysfs.c
+@@ -869,7 +869,7 @@ dev_t __sysfs_devname_to_devno(const char *prefix, const char *name, const char
+ 		goto done;
+ 	sysfs_devname_dev_to_sys(_name);
+ 
+-	if (parent && strncmp("dm-", name, 3)) {
++	if (parent && strncmp("dm-", name, 3) != 0) {
+ 		/*
+ 		 * Create path to /sys/block/<parent>/<name>/dev
+ 		 */
+diff --git a/libblkid/src/devname.c b/libblkid/src/devname.c
+index 3a0f8ab..c58b784 100644
+--- a/libblkid/src/devname.c
++++ b/libblkid/src/devname.c
+@@ -58,7 +58,7 @@ blkid_dev blkid_get_dev(blkid_cache cache, const char *devname, int flags)
+ 	/* search by name */
+ 	list_for_each(p, &cache->bic_devs) {
+ 		tmp = list_entry(p, struct blkid_struct_dev, bid_devs);
+-		if (strcmp(tmp->bid_name, devname))
++		if (strcmp(tmp->bid_name, devname) != 0)
+ 			continue;
+ 		dev = tmp;
+ 		break;
+@@ -70,7 +70,7 @@ blkid_dev blkid_get_dev(blkid_cache cache, const char *devname, int flags)
+ 			DBG(DEVNAME, ul_debug("search canonical %s", cn));
+ 			list_for_each(p, &cache->bic_devs) {
+ 				tmp = list_entry(p, struct blkid_struct_dev, bid_devs);
+-				if (strcmp(tmp->bid_name, cn))
++				if (strcmp(tmp->bid_name, cn) != 0)
+ 					continue;
+ 				dev = tmp;
+ 
+@@ -120,13 +120,13 @@ blkid_dev blkid_get_dev(blkid_cache cache, const char *devname, int flags)
+ 			if (dev2->bid_flags & BLKID_BID_FL_VERIFIED)
+ 				continue;
+ 			if (!dev->bid_type || !dev2->bid_type ||
+-			    strcmp(dev->bid_type, dev2->bid_type))
++			    strcmp(dev->bid_type, dev2->bid_type) != 0)
+ 				continue;
+ 			if (dev->bid_label && dev2->bid_label &&
+-			    strcmp(dev->bid_label, dev2->bid_label))
++			    strcmp(dev->bid_label, dev2->bid_label) != 0)
+ 				continue;
+ 			if (dev->bid_uuid && dev2->bid_uuid &&
+-			    strcmp(dev->bid_uuid, dev2->bid_uuid))
++			    strcmp(dev->bid_uuid, dev2->bid_uuid) != 0)
+ 				continue;
+ 			if ((dev->bid_label && !dev2->bid_label) ||
+ 			    (!dev->bid_label && dev2->bid_label) ||
+@@ -160,7 +160,7 @@ static int is_dm_leaf(const char *devname)
+ 	while ((de = readdir(dir)) != NULL) {
+ 		if (!strcmp(de->d_name, ".") || !strcmp(de->d_name, "..") ||
+ 		    !strcmp(de->d_name, devname) ||
+-		    strncmp(de->d_name, "dm-", 3) ||
++		    strncmp(de->d_name, "dm-", 3) != 0 ||
+ 		    strlen(de->d_name) > sizeof(path)-32)
+ 			continue;
+ 		sprintf(path, "/sys/block/%s/slaves", de->d_name);
+@@ -544,7 +544,7 @@ static int probe_all(blkid_cache cache, int only_if_new)
+ 		 * dev, and the device's base name has changed,
+ 		 * check last as well.
+ 		 */
+-		if (lens[last] && strncmp(ptnames[last], ptname, lens[last])) {
++		if (lens[last] && strncmp(ptnames[last], ptname, lens[last]) != 0) {
+ 			DBG(DEVNAME, ul_debug(" whole dev %s, devno 0x%04X",
+ 				   ptnames[last], (unsigned int) devs[last]));
+ 			probe_one(cache, ptnames[last], devs[last], 0,
+diff --git a/libblkid/src/partitions/atari.c b/libblkid/src/partitions/atari.c
+index 48c3226..f8b6fb5 100644
+--- a/libblkid/src/partitions/atari.c
++++ b/libblkid/src/partitions/atari.c
+@@ -164,7 +164,7 @@ static int parse_extended(blkid_probe pr, blkid_partlist ls,
+ 		if (!IS_ACTIVE(xrs->part[i+1]))
+ 			break;
+ 
+-		if (memcmp(xrs->part[i+1].id, "XGM", 3))
++		if (memcmp(xrs->part[i+1].id, "XGM", 3) != 0)
+ 			return 0;
+ 
+ 		xstart = x0start + be32_to_cpu(xrs->part[i+1].start);
+diff --git a/libblkid/src/superblocks/ntfs.c b/libblkid/src/superblocks/ntfs.c
+index 02487e2..be2e3d8 100644
+--- a/libblkid/src/superblocks/ntfs.c
++++ b/libblkid/src/superblocks/ntfs.c
+@@ -162,7 +162,7 @@ static int __probe_ntfs(blkid_probe pr, const struct blkid_idmag *mag, int save_
+ 	if (!buf_mft)
+ 		return errno ? -errno : 1;
+ 
+-	if (memcmp(buf_mft, "FILE", 4))
++	if (memcmp(buf_mft, "FILE", 4) != 0)
+ 		return 1;
+ 
+ 	off += MFT_RECORD_VOLUME * mft_record_size;
+@@ -171,7 +171,7 @@ static int __probe_ntfs(blkid_probe pr, const struct blkid_idmag *mag, int save_
+ 	if (!buf_mft)
+ 		return errno ? -errno : 1;
+ 
+-	if (memcmp(buf_mft, "FILE", 4))
++	if (memcmp(buf_mft, "FILE", 4) != 0)
+ 		return 1;
+ 
+ 	/* return if caller does not care about UUID and LABEL */
+diff --git a/libblkid/src/superblocks/vfat.c b/libblkid/src/superblocks/vfat.c
+index 7c01ceb..c7a3d08 100644
+--- a/libblkid/src/superblocks/vfat.c
++++ b/libblkid/src/superblocks/vfat.c
+@@ -425,7 +425,7 @@ static int probe_vfat(blkid_probe pr, const struct blkid_idmag *mag)
+ 		}
+ 	}
+ 
+-	if (boot_label && memcmp(boot_label, no_name, 11))
++	if (boot_label && memcmp(boot_label, no_name, 11) != 0)
+ 		blkid_probe_set_id_label(pr, "LABEL_FATBOOT", boot_label, 11);
+ 
+ 	if (vol_label)
+diff --git a/libblkid/src/tag.c b/libblkid/src/tag.c
+index f6b67f6..390a648 100644
+--- a/libblkid/src/tag.c
++++ b/libblkid/src/tag.c
+@@ -73,7 +73,7 @@ int blkid_dev_has_tag(blkid_dev dev, const char *type,
+ 	tag = blkid_find_tag_dev(dev, type);
+ 	if (!value)
+ 		return (tag != NULL);
+-	if (!tag || strcmp(tag->bit_val, value))
++	if (!tag || strcmp(tag->bit_val, value) != 0)
+ 		return 0;
+ 	return 1;
+ }
+diff --git a/libfdisk/src/sgi.c b/libfdisk/src/sgi.c
+index d5391b5..6b4b5d1 100644
+--- a/libfdisk/src/sgi.c
++++ b/libfdisk/src/sgi.c
+@@ -413,7 +413,7 @@ static int sgi_check_bootfile(struct fdisk_context *cxt, const char *name)
+ 	}
+ 
+ 	if (strncmp(name, (char *) sgilabel->boot_file,
+-				sizeof(sgilabel->boot_file))) {
++				sizeof(sgilabel->boot_file)) != 0) {
+ 		fdisk_warnx(cxt, _("Be aware that the bootfile is not checked "
+ 				   "for existence.  SGI's default is \"/unix\", "
+ 				   "and for backup \"/unix.save\"."));
+diff --git a/libmount/src/context.c b/libmount/src/context.c
+index 2b598db..8b548b2 100644
+--- a/libmount/src/context.c
++++ b/libmount/src/context.c
+@@ -1808,7 +1808,7 @@ int mnt_context_prepare_srcpath(struct libmnt_context *cxt)
+ 		 * Source is PATH (canonicalize)
+ 		 */
+ 		path = mnt_resolve_path(src, cache);
+-		if (path && strcmp(path, src))
++		if (path && strcmp(path, src) != 0)
+ 			rc = mnt_fs_set_source(cxt->fs, path);
+ 	 }
+ 
+diff --git a/libmount/src/context_umount.c b/libmount/src/context_umount.c
+index f3e0799..e1cf7c6 100644
+--- a/libmount/src/context_umount.c
++++ b/libmount/src/context_umount.c
+@@ -388,7 +388,7 @@ static int is_associated_fs(const char *devname, struct libmnt_fs *fs)
+ 	int flags = 0;
+ 
+ 	/* check if it begins with /dev/loop */
+-	if (strncmp(devname, _PATH_DEV_LOOP, sizeof(_PATH_DEV_LOOP) - 1))
++	if (strncmp(devname, _PATH_DEV_LOOP, sizeof(_PATH_DEV_LOOP) - 1) != 0)
+ 		return 0;
+ 
+ 	src = mnt_fs_get_srcpath(fs);
+diff --git a/libmount/src/optmap.c b/libmount/src/optmap.c
+index 1f3ace3..a080d8d 100644
+--- a/libmount/src/optmap.c
++++ b/libmount/src/optmap.c
+@@ -249,7 +249,7 @@ const struct libmnt_optmap *mnt_optmap_get_entry(
+ 				}
+ 				continue;
+ 			}
+-			if (strncmp(ent->name, name, namelen))
++			if (strncmp(ent->name, name, namelen) != 0)
+ 				continue;
+ 			p = ent->name + namelen;
+ 			if (*p == '\0' || *p == '=' || *p == '[') {
+diff --git a/libmount/src/optstr.c b/libmount/src/optstr.c
+index f975cef..781bb29 100644
+--- a/libmount/src/optstr.c
++++ b/libmount/src/optstr.c
+@@ -1077,7 +1077,7 @@ int mnt_optstr_fix_user(char **optstr)
+ 	if (!username)
+ 		return -ENOMEM;
+ 
+-	if (!ol.valsz || (ol.value && strncmp(ol.value, username, ol.valsz))) {
++	if (!ol.valsz || (ol.value && strncmp(ol.value, username, ol.valsz) != 0)) {
+ 		if (ol.valsz)
+ 			/* remove old value */
+ 			mnt_optstr_remove_option_at(optstr, ol.value, ol.end);
+diff --git a/libmount/src/tab_diff.c b/libmount/src/tab_diff.c
+index fdb1ef5..81694bc 100644
+--- a/libmount/src/tab_diff.c
++++ b/libmount/src/tab_diff.c
+@@ -277,7 +277,7 @@ int mnt_diff_tables(struct libmnt_tabdiff *df, struct libmnt_table *old_tab,
+ 				   *f1 = mnt_fs_get_fs_options(o_fs),
+ 				   *f2 = mnt_fs_get_fs_options(fs);
+ 
+-			if ((v1 && v2 && strcmp(v1, v2)) || (f1 && f2 && strcmp(f1, f2)))
++			if ((v1 && v2 && strcmp(v1, v2) != 0) || (f1 && f2 && strcmp(f1, f2) != 0))
+ 				tabdiff_add_entry(df, o_fs, fs, MNT_TABDIFF_REMOUNT);
+ 		}
+ 	}
+diff --git a/libmount/src/tab_parse.c b/libmount/src/tab_parse.c
+index ffcf245..3b52f6b 100644
+--- a/libmount/src/tab_parse.c
++++ b/libmount/src/tab_parse.c
+@@ -885,7 +885,7 @@ static int mnt_table_parse_dir_filter(const struct dirent *d)
+ 	namesz = strlen(d->d_name);
+ 	if (!namesz || namesz < MNT_MNTTABDIR_EXTSIZ + 1 ||
+ 	    strcmp(d->d_name + (namesz - MNT_MNTTABDIR_EXTSIZ),
+-		   MNT_MNTTABDIR_EXT))
++		   MNT_MNTTABDIR_EXT) != 0)
+ 		return 0;
+ 
+ 	/* Accept this */
+diff --git a/login-utils/login.c b/login-utils/login.c
+index 457bd98..30940a6 100644
+--- a/login-utils/login.c
++++ b/login-utils/login.c
+@@ -377,7 +377,7 @@ static void init_tty(struct login_context *cxt)
+ 	 */
+ 	if (!cxt->tty_path || !*cxt->tty_path ||
+ 	    lstat(cxt->tty_path, &st) != 0 || !S_ISCHR(st.st_mode) ||
+-	    (st.st_nlink > 1 && strncmp(cxt->tty_path, "/dev/", 5)) ||
++	    (st.st_nlink > 1 && strncmp(cxt->tty_path, "/dev/", 5) != 0) ||
+ 	    access(cxt->tty_path, R_OK | W_OK) != 0) {
+ 
+ 		syslog(LOG_ERR, _("FATAL: bad tty"));
+diff --git a/login-utils/su-common.c b/login-utils/su-common.c
+index e671d82..3cd7f59 100644
+--- a/login-utils/su-common.c
++++ b/login-utils/su-common.c
+@@ -1149,7 +1149,7 @@ int su_main(int argc, char **argv, int mode)
+ 			shell = getenv("SHELL");
+ 
+ 		if (shell
+-		    && strcmp(shell, su->pwd->pw_shell)
++		    && strcmp(shell, su->pwd->pw_shell) != 0
+ 		    && getuid() != 0
+ 		    && is_restricted_shell(su->pwd->pw_shell)) {
+ 			/* The user being su'd to has a nonstandard shell, and
+diff --git a/misc-utils/findmnt.c b/misc-utils/findmnt.c
+index 53f647f..43b4dc7 100644
+--- a/misc-utils/findmnt.c
++++ b/misc-utils/findmnt.c
+@@ -524,7 +524,7 @@ static char *get_data(struct libmnt_fs *fs, int num)
+ 			if (spec && (flags & FL_EVALUATE))
+ 				spec = cn = mnt_resolve_spec(spec, cache);
+ 		}
+-		if (root && spec && !(flags & FL_NOFSROOT) && strcmp(root, "/"))
++		if (root && spec && !(flags & FL_NOFSROOT) && strcmp(root, "/") != 0)
+ 			xasprintf(&str, "%s[%s]", spec, root);
+ 		else if (spec)
+ 			str = xstrdup(spec);
+diff --git a/misc-utils/hardlink.c b/misc-utils/hardlink.c
+index 6361589..e985aaf 100644
+--- a/misc-utils/hardlink.c
++++ b/misc-utils/hardlink.c
+@@ -296,7 +296,7 @@ static void process_path(struct hardlink_ctl *ctl, const char *name)
+ 						close(fd2);
+ 						return;
+ 					}
+-					if (memcmp(ctl->iobuf1, ctl->iobuf2, rsize))
++					if (memcmp(ctl->iobuf1, ctl->iobuf2, rsize) != 0)
+ 						break;
+ 				}
+ 				close(fd2);
+diff --git a/misc-utils/lsblk-properties.c b/misc-utils/lsblk-properties.c
+index a1c73bc..6f41eac 100644
+--- a/misc-utils/lsblk-properties.c
++++ b/misc-utils/lsblk-properties.c
+@@ -136,7 +136,7 @@ static int lookup(char *buf, char *pattern, char **value)
+ 		return 0;
+ 
+ 	len = strlen(pattern);
+-	if (strncmp(buf, pattern, len))
++	if (strncmp(buf, pattern, len) != 0)
+ 		return 0;
+ 
+ 	p = buf + len;
+diff --git a/sys-utils/chmem.c b/sys-utils/chmem.c
+index b3645be..2f231d6 100644
+--- a/sys-utils/chmem.c
++++ b/sys-utils/chmem.c
+@@ -133,7 +133,7 @@ static int chmem_size(struct chmem_desc *desc, int enable, int zone_id)
+ 				zn = zone_names[zone_id];
+ 				if (enable && !strcasestr(line, zn))
+ 					continue;
+-				if (!enable && strncasecmp(line, zn, strlen(zn)))
++				if (!enable && strncasecmp(line, zn, strlen(zn)) != 0)
+ 					continue;
+ 			} else if (enable) {
+ 				/* By default, use zone Movable for online, if valid */
+@@ -218,7 +218,7 @@ static int chmem_range(struct chmem_desc *desc, int enable, int zone_id)
+ 					warnx(_("%s enable failed: Zone mismatch"), str);
+ 					continue;
+ 				}
+-				if (!enable && strncasecmp(line, zn, strlen(zn))) {
++				if (!enable && strncasecmp(line, zn, strlen(zn)) != 0) {
+ 					warnx(_("%s disable failed: Zone mismatch"), str);
+ 					continue;
+ 				}
+@@ -251,7 +251,7 @@ static int chmem_range(struct chmem_desc *desc, int enable, int zone_id)
+ 
+ static int filter(const struct dirent *de)
+ {
+-	if (strncmp("memory", de->d_name, 6))
++	if (strncmp("memory", de->d_name, 6) != 0)
+ 		return 0;
+ 	return isdigit_string(de->d_name + 6);
+ }
+diff --git a/sys-utils/lscpu-arm.c b/sys-utils/lscpu-arm.c
+index ef9d1ff..aa7d826 100644
+--- a/sys-utils/lscpu-arm.c
++++ b/sys-utils/lscpu-arm.c
+@@ -209,7 +209,7 @@ void arm_cpu_decode(struct lscpu_desc *desc)
+ 
+ 	if (desc->vendor == NULL || desc->model == NULL)
+ 		return;
+-	if ((strncmp(desc->vendor,"0x",2) || strncmp(desc->model,"0x",2) ))
++	if ((strncmp(desc->vendor,"0x",2) != 0 || strncmp(desc->model,"0x",2) ))
+ 		return;
+ 
+ 	errno = 0;
+diff --git a/sys-utils/lscpu.c b/sys-utils/lscpu.c
+index 79b94dc..d6c3f2e 100644
+--- a/sys-utils/lscpu.c
++++ b/sys-utils/lscpu.c
+@@ -277,7 +277,7 @@ lookup(char *line, char *pattern, char **value)
+ 		return 0;
+ 
+ 	/* pattern */
+-	if (strncmp(line, pattern, len))
++	if (strncmp(line, pattern, len) != 0)
+ 		return 0;
+ 
+ 	/* white spaces */
+@@ -322,7 +322,7 @@ lookup_cache(char *line, struct lscpu_desc *desc)
+ 	int level;
+ 
+ 	/* Make sure line starts with "cache<nr> :" */
+-	if (strncmp(line, "cache", 5))
++	if (strncmp(line, "cache", 5) != 0)
+ 		return 0;
+ 	for (p = line + 5; isdigit(*p); p++);
+ 	for (; isspace(*p); p++);
+diff --git a/sys-utils/lsmem.c b/sys-utils/lsmem.c
+index a1272ae..45775d9 100644
+--- a/sys-utils/lsmem.c
++++ b/sys-utils/lsmem.c
+@@ -344,7 +344,7 @@ static int memory_block_get_node(struct lsmem *lsmem, char *name)
+ 
+ 	node = -1;
+ 	while ((de = readdir(dir)) != NULL) {
+-		if (strncmp("node", de->d_name, 4))
++		if (strncmp("node", de->d_name, 4) != 0)
+ 			continue;
+ 		if (!isdigit_string(de->d_name + 4))
+ 			continue;
+@@ -459,7 +459,7 @@ static void read_info(struct lsmem *lsmem)
+ 
+ static int memory_block_filter(const struct dirent *de)
+ {
+-	if (strncmp("memory", de->d_name, 6))
++	if (strncmp("memory", de->d_name, 6) != 0)
+ 		return 0;
+ 	return isdigit_string(de->d_name + 6);
+ }
+diff --git a/sys-utils/setarch.c b/sys-utils/setarch.c
+index 1a2ae1b..cb4b081 100644
+--- a/sys-utils/setarch.c
++++ b/sys-utils/setarch.c
+@@ -262,12 +262,12 @@ static void verify_arch_domain(struct arch_domain *dom, const char *wanted)
+ 		return;
+ 
+ 	uname(&un);
+-	if (strcmp(un.machine, dom->result_arch)) {
+-		if (strcmp(dom->result_arch, "i386")
+-		    || (strcmp(un.machine, "i486")
++	if (strcmp(un.machine, dom->result_arch) != 0) {
++		if (strcmp(dom->result_arch, "i386") != 0
++		    || (strcmp(un.machine, "i486") != 0
+ 			&& strcmp(un.machine, "i586")
+-			&& strcmp(un.machine, "i686")
+-			&& strcmp(un.machine, "athlon")))
++			&& strcmp(un.machine, "i686") != 0
++			&& strcmp(un.machine, "athlon") != 0))
+ 			errx(EXIT_FAILURE, _("Kernel cannot set architecture to %s"), wanted);
+ 	}
+ }
+diff --git a/term-utils/agetty.c b/term-utils/agetty.c
+index f88a8da..861a56d 100644
+--- a/term-utils/agetty.c
++++ b/term-utils/agetty.c
+@@ -580,7 +580,7 @@ static char *replace_u(char *str, char *username)
+ 		size_t sz;
+ 		char *tp, *old = entry;
+ 
+-		if (memcmp(p, "\\u", 2)) {
++		if (memcmp(p, "\\u", 2) != 0) {
+ 			p++;
+ 			continue;	/* no \u */
+ 		}
+@@ -1732,7 +1732,7 @@ static int issuedir_filter(const struct dirent *d)
+ 
+ 	namesz = strlen(d->d_name);
+ 	if (!namesz || namesz < ISSUEDIR_EXTSIZ + 1 ||
+-	    strcmp(d->d_name + (namesz - ISSUEDIR_EXTSIZ), ISSUEDIR_EXT))
++	    strcmp(d->d_name + (namesz - ISSUEDIR_EXTSIZ), ISSUEDIR_EXT) != 0)
+ 		return 0;
+ 
+ 	/* Accept this */
+diff --git a/term-utils/write.c b/term-utils/write.c
+index 90eb18c..50f18dc 100644
+--- a/term-utils/write.c
++++ b/term-utils/write.c
+@@ -275,7 +275,7 @@ static void do_write(const struct write_control *ctl)
+ 	tm = localtime(&now);
+ 	/* print greeting */
+ 	printf("\r\n\a\a\a");
+-	if (strcmp(login, pwuid))
++	if (strcmp(login, pwuid) != 0)
+ 		printf(_("Message from %s@%s (as %s) on %s at %02d:%02d ..."),
+ 		       login, host, pwuid, ctl->src_tty_name,
+ 		       tm->tm_hour, tm->tm_min);
+diff --git a/tests/helpers/test_strerror.c b/tests/helpers/test_strerror.c
+index a063b11..f51f698 100644
+--- a/tests/helpers/test_strerror.c
++++ b/tests/helpers/test_strerror.c
+@@ -33,7 +33,7 @@ int main(int argc, const char *argv[])
+ 	}
+ 
+ 	for (i = 0; i < sizeof(errors)/sizeof(*errors); i++) {
+-		if (strcmp(errors[i].str, argv[1]))
++		if (strcmp(errors[i].str, argv[1]) != 0)
+ 			continue;
+ 		puts(strerror(errors[i].error));
+ 		return 0;
+diff --git a/text-utils/hexdump-display.c b/text-utils/hexdump-display.c
+index 6399608..695b472 100644
+--- a/text-utils/hexdump-display.c
++++ b/text-utils/hexdump-display.c
+@@ -377,7 +377,7 @@ get(struct hexdump *hex)
+ 			hex->length -= n;
+ 		if (!(need -= n)) {
+ 			if (vflag == ALL || vflag == FIRST ||
+-			    memcmp(curp, savp, hex->blocksize)) {
++			    memcmp(curp, savp, hex->blocksize) != 0) {
+ 				if (vflag == DUP || vflag == FIRST)
+ 					vflag = WAIT;
+ 				return(curp);
+-- 
+1.8.3.1
+
