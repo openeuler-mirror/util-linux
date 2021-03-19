@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        2.35.2
-Release:        5
+Release:        6
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -52,6 +52,9 @@ Patch12:        backport-libfdisk-another-parse_line-nameval-cleanup.patch
 Patch13:        backport-libfdisk-script-fix-possible-memory-leaks.patch
 Patch14:        backport-libfdisk-script-fix-possible-partno-overflow.patch
 Patch15:        backport-libmount-fix-tab-parser-for-badly-terminated-lines.patch
+Patch16:        backport-clang-tidy-fix-wrong-cmp-usage.patch
+Patch17:        backport-libblkid-improve-debug-for-proc-partitions.patch
+Patch18:        backport-libblkid-use-sys-to-read-all-block-devices.patch
 
 Patch9000:	Add-check-to-resolve-uname26-version-test-failed.patch
 
@@ -398,6 +401,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Thu Mar 18 2021 wangchen <wangchen137@huawei.com> - 2.35.2-6
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:use /sys to read all block devides
+
 * Mon Mar 1 2021 yangzhuangzhuang <yangzhuangzhuang1@huawei.com> - 2.35.2-5
 - Type:bugfix
 - ID:NA
