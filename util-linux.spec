@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        2.36.1
-Release:        2
+Release:        3
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -39,6 +39,8 @@ Patch0:         2.36-login-lastlog-create.patch
 Patch1:         Do-not-excute-Utmp-testcases.patch
 Patch2:         backport-libfdisk-make-fdisk_partname-more-robust.patch
 Patch3:         backport-libmount-fix-tab-parser-for-badly-terminated-lines.patch
+Patch4:         backport-libblkid-improve-debug-for-proc-partitions.patch
+Patch5:         backport-libblkid-use-sys-to-read-all-block-devices.patch
 
 Patch9000:	Add-check-to-resolve-uname26-version-test-failed.patch
 
@@ -388,6 +390,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Thu Mar 18 2021 wangchen <wangchen137@huawei.com> - 2.36.1-3
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:use /sys to read all block devices
+
 * Mon Mar 1 2021 yangzhuangzhuang <yangzhuangzhuang1@huawei.com> - 2.36.1-2
 - Type:bugfix
 - ID:NA
