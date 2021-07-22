@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        2.36.1
-Release:        3
+Release:        4
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -19,7 +19,7 @@ Source8:        util-linux-runuser.pamd
 Source9:        util-linux-runuser-l.pamd
 
 BuildRequires:  audit-libs-devel >= 1.0.6 gettext-devel libselinux-devel ncurses-devel pam-devel zlib-devel popt-devel
-BuildRequires:  libutempter-devel systemd-devel systemd libuser-devel libcap-ng-devel python3-devel gcc gdb
+BuildRequires:  libutempter-devel systemd-devel systemd libuser-devel libcap-ng-devel python3-devel gcc
 
 Requires(post): coreutils
 Requires:       pam >= 1.1.3-7, /etc/pam.d/system-auth audit-libs >= 1.0.6
@@ -390,6 +390,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Thu Jul 22 2021 shixuantong<shixuantong@huawei.com> - 2.36.1-4
+- Type:bugfix
+- ID:NA
+- SUG:NA
+- DESC:remove gdb from BuildRequires
+
 * Thu Mar 18 2021 wangchen <wangchen137@huawei.com> - 2.36.1-3
 - Type:bugfix
 - ID:NA
