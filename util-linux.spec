@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.35.2
-Release:        5
+Release:        6
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -29,10 +29,10 @@ Conflicts:      initscripts < 9.79-4 bash-completion < 1:2.1-1 coreutils < 8.20
 Conflicts:      e2fsprogs < 1.41.8-5 filesystem < 3
 
 Provides:       eject = 2.1.6 rfkill = 0.5
-Provides:       util-linux-ng = %{version}-%{release}
+Provides:       util-linux-ng = %{version}-%{release} hardlink = 1:1.3-9
 Provides:       /bin/dmesg /bin/kill /bin/more /bin/mount /bin/umount /sbin/blkid
 Provides:       /sbin/blockdev /sbin/findfs /sbin/fsck /sbin/nologin
-Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19 sysvinit-tools < 0:2.89
+Obsoletes:      eject <= 2.1.5 rfkill <= 0.5 util-linux-ng < 2.19 sysvinit-tools < 0:2.89 hardlink <= 1:1.3-9
 
 Patch0:         2.28-login-lastlog-create.patch
 Patch1:         libmount-move-already-mounted-code-to-separate-funct.patch
@@ -150,6 +150,8 @@ development of %{name}.
 Summary:        Help package for ${name}
 BuildArch:      noarch
 Requires:       %{name} = %{version}-%{release}
+Obsoletes:      hardlink-help <= 1:1.3-9
+Provides:       hardlink-help = 1:1.3-9
 
 %description help
 This package contains some doc and man help files for %{name}.
@@ -171,6 +173,7 @@ unset LINGUAS || :
   --enable-usrdir-path \
   --enable-write \
   --enable-raw \
+  --enable-hardlink \
   --with-python=2 \
   --with-systemd \
   --with-udev \
@@ -387,7 +390,7 @@ fi
 %{_mandir}/man1/{kill.1*,last.1*,lastb.1*,logger.1*,login.1*,look.1*,lscpu.1*,lsipc.1*,lslogins.1*,lsmem.1*}
 %{_mandir}/man1/{mcookie.1*,mesg.1*,more.1*,mountpoint.1*,namei.1*,nsenter.1*,prlimit.1*,rename.1*,renice.1*}
 %{_mandir}/man1/{rev.1*,runuser.1*,script.1*,scriptreplay.1*,setpriv.1*,setsid.1*,setterm.1*,su.1*,taskset.1*}
-%{_mandir}/man1/{ul.1*,unshare.1*,utmpdump.1.gz,uuidgen.1*,uuidparse.1*,wall.1*,whereis.1*,write.1*,choom.1*,scriptlive*}
+%{_mandir}/man1/{ul.1*,unshare.1*,utmpdump.1.gz,uuidgen.1*,uuidparse.1*,wall.1*,whereis.1*,write.1*,choom.1*,scriptlive*,hardlink.1*}
 %{_mandir}/man3/{libblkid.3*,uuid.3*,uuid_clear.3*,uuid_compare.3*,uuid_copy.3*,uuid_generate.3*,uuid_generate_random.3*}
 %{_mandir}/man3/{uuid_generate_time_safe.3*,uuid_is_null.3*,uuid_parse.3*,uuid_time.3*,uuid_unparse.3*,uuid_generate_time.3*}
 %{_mandir}/man5/{fstab.5*,terminal-colors.d.5*,adjtime_config.5.*}
@@ -400,6 +403,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Mon Jul 05 2021 yuanxin <yuanxin24@huawei.com> - 2.35.2-6
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:add command hardlink
+
 * Thu Mar 18 2021 wangchen <wangchen137@huawei.com> - 2.35.2-5
 - Use /sys to read all block devices
 
