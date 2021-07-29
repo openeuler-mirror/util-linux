@@ -1,0 +1,41 @@
+From f12d5ad279f248b2fb63394331010f2c835b1a74 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Fri, 17 Apr 2020 10:21:56 +0200
+Subject: [PATCH] lib/strutils: fix uint64_t overflow
+
+Addresses: https://github.com/karelzak/util-linux/issues/998
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ lib/strutils.c                | 5 ++++-
+ tests/expected/misc/strtosize | 2 +-
+ 2 files changed, 5 insertions(+), 2 deletions(-)
+
+diff --git a/lib/strutils.c b/lib/strutils.c
+index ccf48919bd..b76ab99520 100644
+--- a/lib/strutils.c
++++ b/lib/strutils.c
+@@ -603,7 +603,10 @@ char *size_to_human_string(int options, uint64_t bytes)
+ 	/* round */
+ 	if (frac) {
+ 		/* get 3 digits after decimal point */
+-		frac = (frac * 1000) / (1ULL << exp);
++		if (frac >= UINT64_MAX / 1000)
++			frac = ((frac / 1024) * 1000) / (1ULL << (exp - 10)) ;
++		else
++			frac = (frac * 1000) / (1ULL << (exp)) ;
+ 
+ 		if (options & SIZE_DECIMAL_2DIGITS) {
+ 			/* round 4/5 and keep 2 digits after decimal point */
+diff --git a/tests/expected/misc/strtosize b/tests/expected/misc/strtosize
+index abda45a575..0f912f7229 100644
+--- a/tests/expected/misc/strtosize
++++ b/tests/expected/misc/strtosize
+@@ -1,7 +1,7 @@
+                         0 :                    0 :       0B :          0 B :           0 B
+                         1 :                    1 :       1B :          1 B :           1 B
+                       123 :                  123 :     123B :        123 B :         123 B
+-     18446744073709551615 : 18446744073709551615 :      15E :       15 EiB :     15.01 EiB
++     18446744073709551615 : 18446744073709551615 :      16E :       16 EiB :        16 EiB
+                        1K :                 1024 :       1K :        1 KiB :         1 KiB
+                      1KiB :                 1024 :       1K :        1 KiB :         1 KiB
+                        1M :              1048576 :       1M :        1 MiB :         1 MiB
