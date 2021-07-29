@@ -1,0 +1,156 @@
+From b38c20e13a51acb7e3bb388e9cc17d5fc905e7d9 Mon Sep 17 00:00:00 2001
+From: Karel Zak <kzak@redhat.com>
+Date: Wed, 15 Apr 2020 15:01:12 +0200
+Subject: [PATCH] ilib/strutils: fix rounding in size_to_human_string()
+
+Thanks to bub75 for the idea.
+
+The patch adds SIZE_DECIMAL_2DIGITS into regression tests.
+
+Addresses: https://github.com/karelzak/util-linux/issues/998
+Signed-off-by: Karel Zak <kzak@redhat.com>
+---
+ lib/strutils.c                | 43 +++++++++++++++++++++--------
+ tests/expected/misc/strtosize | 52 +++++++++++++++++------------------
+ 2 files changed, 58 insertions(+), 37 deletions(-)
+
+diff --git a/lib/strutils.c b/lib/strutils.c
+index be404e703b..ccf48919bd 100644
+--- a/lib/strutils.c
++++ b/lib/strutils.c
+@@ -602,24 +602,41 @@ char *size_to_human_string(int options, uint64_t bytes)
+ 
+ 	/* round */
+ 	if (frac) {
++		/* get 3 digits after decimal point */
++		frac = (frac * 1000) / (1ULL << exp);
++
+ 		if (options & SIZE_DECIMAL_2DIGITS) {
+-			frac = (frac / (1ULL << (exp - 10)) + 5) / 10;
+-			if (frac % 10 == 0)
+-				frac /= 10;	/* convert N.90 to N.9 */
++			/* round 4/5 and keep 2 digits after decimal point */
++			frac = (frac + 5) / 10 ;
+ 		} else {
+-			frac = (frac / (1ULL << (exp - 10)) + 50) / 100;
+-			if (frac == 10)
+-				dec++, frac = 0;
++			/* round 4/5 and keep 1 digit after decimal point */
++			frac = ((frac + 50) / 100) * 10 ;
++		}
++
++		/* rounding could have overflowed */
++		if (frac == 100) {
++			dec++;
++			frac = 0;
+ 		}
+ 	}
+ 
+ 	if (frac) {
+ 		struct lconv const *l = localeconv();
+ 		char *dp = l ? l->decimal_point : NULL;
++		int len;
+ 
+ 		if (!dp || !*dp)
+ 			dp = ".";
+-		snprintf(buf, sizeof(buf), "%d%s%" PRIu64 "%s", dec, dp, frac, suffix);
++
++		len = snprintf(buf, sizeof(buf), "%d%s%02" PRIu64, dec, dp, frac);
++		if (len > 0 && (size_t) len < sizeof(buf)) {
++			/* remove potential extraneous zero */
++			if (buf[len - 1] == '0')
++				buf[len--] = '\0';
++			/* append suffix */
++			xstrncpy(buf+len, suffix, sizeof(buf) - len);
++		} else
++			*buf = '\0';	/* snprintf error */
+ 	} else
+ 		snprintf(buf, sizeof(buf), "%d%s", dec, suffix);
+ 
+@@ -1051,7 +1068,7 @@ static int test_strdup_to_member(int argc, char *argv[])
+ static int test_strutils_sizes(int argc, char *argv[])
+ {
+ 	uintmax_t size = 0;
+-	char *hum, *hum2;
++	char *hum1, *hum2, *hum3;
+ 
+ 	if (argc < 2)
+ 		return EXIT_FAILURE;
+@@ -1059,13 +1076,17 @@ static int test_strutils_sizes(int argc, char *argv[])
+ 	if (strtosize(argv[1], &size))
+ 		errx(EXIT_FAILURE, "invalid size '%s' value", argv[1]);
+ 
+-	hum = size_to_human_string(SIZE_SUFFIX_1LETTER, size);
++	hum1 = size_to_human_string(SIZE_SUFFIX_1LETTER, size);
+ 	hum2 = size_to_human_string(SIZE_SUFFIX_3LETTER |
+ 				    SIZE_SUFFIX_SPACE, size);
++	hum3 = size_to_human_string(SIZE_SUFFIX_3LETTER |
++				    SIZE_SUFFIX_SPACE |
++				    SIZE_DECIMAL_2DIGITS, size);
+ 
+-	printf("%25s : %20ju : %8s : %12s\n", argv[1], size, hum, hum2);
+-	free(hum);
++	printf("%25s : %20ju : %8s : %12s : %13s\n", argv[1], size, hum1, hum2, hum3);
++	free(hum1);
+ 	free(hum2);
++	free(hum3);
+ 
+ 	return EXIT_SUCCESS;
+ }
+diff --git a/tests/expected/misc/strtosize b/tests/expected/misc/strtosize
+index 8d93e142d3..abda45a575 100644
+--- a/tests/expected/misc/strtosize
++++ b/tests/expected/misc/strtosize
+@@ -1,26 +1,26 @@
+-                        0 :                    0 :       0B :          0 B
+-                        1 :                    1 :       1B :          1 B
+-                      123 :                  123 :     123B :        123 B
+-     18446744073709551615 : 18446744073709551615 :      16E :       16 EiB
+-                       1K :                 1024 :       1K :        1 KiB
+-                     1KiB :                 1024 :       1K :        1 KiB
+-                       1M :              1048576 :       1M :        1 MiB
+-                     1MiB :              1048576 :       1M :        1 MiB
+-                       1G :           1073741824 :       1G :        1 GiB
+-                     1GiB :           1073741824 :       1G :        1 GiB
+-                       1T :        1099511627776 :       1T :        1 TiB
+-                     1TiB :        1099511627776 :       1T :        1 TiB
+-                       1P :     1125899906842624 :       1P :        1 PiB
+-                     1PiB :     1125899906842624 :       1P :        1 PiB
+-                       1E :  1152921504606846976 :       1E :        1 EiB
+-                     1EiB :  1152921504606846976 :       1E :        1 EiB
+-                      1KB :                 1000 :    1000B :       1000 B
+-                      1MB :              1000000 :   976.6K :    976.6 KiB
+-                      1GB :           1000000000 :   953.7M :    953.7 MiB
+-                      1TB :        1000000000000 :   931.3G :    931.3 GiB
+-                      1PB :     1000000000000000 :   909.5T :    909.5 TiB
+-                      1EB :  1000000000000000000 :   888.2P :    888.2 PiB
+-                        1 :                    1 :       1B :          1 B
+-                     0x0a :                   10 :      10B :         10 B
+-                   0xff00 :                65280 :    63.8K :     63.8 KiB
+-               0x80000000 :           2147483648 :       2G :        2 GiB
++                        0 :                    0 :       0B :          0 B :           0 B
++                        1 :                    1 :       1B :          1 B :           1 B
++                      123 :                  123 :     123B :        123 B :         123 B
++     18446744073709551615 : 18446744073709551615 :      15E :       15 EiB :     15.01 EiB
++                       1K :                 1024 :       1K :        1 KiB :         1 KiB
++                     1KiB :                 1024 :       1K :        1 KiB :         1 KiB
++                       1M :              1048576 :       1M :        1 MiB :         1 MiB
++                     1MiB :              1048576 :       1M :        1 MiB :         1 MiB
++                       1G :           1073741824 :       1G :        1 GiB :         1 GiB
++                     1GiB :           1073741824 :       1G :        1 GiB :         1 GiB
++                       1T :        1099511627776 :       1T :        1 TiB :         1 TiB
++                     1TiB :        1099511627776 :       1T :        1 TiB :         1 TiB
++                       1P :     1125899906842624 :       1P :        1 PiB :         1 PiB
++                     1PiB :     1125899906842624 :       1P :        1 PiB :         1 PiB
++                       1E :  1152921504606846976 :       1E :        1 EiB :         1 EiB
++                     1EiB :  1152921504606846976 :       1E :        1 EiB :         1 EiB
++                      1KB :                 1000 :    1000B :       1000 B :        1000 B
++                      1MB :              1000000 :   976.6K :    976.6 KiB :    976.56 KiB
++                      1GB :           1000000000 :   953.7M :    953.7 MiB :    953.67 MiB
++                      1TB :        1000000000000 :   931.3G :    931.3 GiB :    931.32 GiB
++                      1PB :     1000000000000000 :   909.5T :    909.5 TiB :    909.49 TiB
++                      1EB :  1000000000000000000 :   888.2P :    888.2 PiB :    888.18 PiB
++                        1 :                    1 :       1B :          1 B :           1 B
++                     0x0a :                   10 :      10B :         10 B :          10 B
++                   0xff00 :                65280 :    63.8K :     63.8 KiB :     63.75 KiB
++               0x80000000 :           2147483648 :       2G :        2 GiB :         2 GiB
