@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.35.2
-Release:        7
+Release:        8
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -57,6 +57,7 @@ Patch18:        backport-libblkid-use-sys-to-read-all-block-devices.patch
 Patch19:        backpaort-fix-rounding-in-size_to_human_string.patch
 Patch20:        backpaort-fix-uint64_t-overflow.patch
 Patch21:        backpaort-update-fdisk-outputs-due-to-sizes-rounding-change.patch
+Patch6000:      backport-CVE-2021-37600.patch
 
 Patch9000:	Add-check-to-resolve-uname26-version-test-failed.patch
 
@@ -406,6 +407,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Tue Aug 10 2021 shixuantong<shixuantong@huawei.com> - 2.35.2-8
+- Type:CVE
+- ID:CVE-2021-37600
+- SUG:NA
+- DESC:fix CVE-2021-37600
+
 * Wed Jul 28 2021 shangyibin <shangyibin1@huawei.com> - 2.35.2-7
 - Type:bugfix
 - ID:NA
