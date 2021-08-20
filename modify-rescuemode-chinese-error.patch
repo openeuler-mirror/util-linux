@@ -1,0 +1,56 @@
+From 5b81afefaba928dfb2f6686ed90e4512fff19357 Mon Sep 17 00:00:00 2001
+From: ut001695 <zhangkea@uniontech.com>
+Date: Fri, 6 Nov 2020 16:28:05 +0800
+Subject: [PATCH] 1
+
+---
+ po/util-linux.pot |  8 ++++----
+ po/zh_CN.po       | 12 ++++++------
+ 2 files changed, 10 insertions(+), 10 deletions(-)
+
+diff --git a/po/util-linux.pot b/po/util-linux.pot
+index fe84f6e..ebbc162 100644
+--- a/po/util-linux.pot
++++ b/po/util-linux.pot
+@@ -7622,10 +7622,10 @@ msgstr ""
+ 
+ #: login-utils/login.c:801 login-utils/sulogin.c:1013
+ #, c-format
+-msgid ""
+-"Login incorrect\n"
+-"\n"
+-msgstr ""
++#msgid ""
++#"Login incorrect\n"
++#"\n"
++#msgstr ""
+ 
+ #: login-utils/login.c:816
+ #, c-format
+diff --git a/po/zh_CN.po b/po/zh_CN.po
+index 9da9f78..2f6e31b 100644
+--- a/po/zh_CN.po
++++ b/po/zh_CN.po
+@@ -7624,12 +7624,12 @@ msgstr "FAILED LOGIN %u FROM %s FOR %s, %s"
+ 
+ #: login-utils/login.c:801 login-utils/sulogin.c:1013
+ #, c-format
+-msgid ""
+-"Login incorrect\n"
+-"\n"
+-msgstr ""
+-"登录不正确\n"
+-"\n"
++#msgid ""
++#"Login incorrect\n"
++#"\n"
++#msgstr ""
++#"登录不正确\n"
++#"\n"
+ 
+ #: login-utils/login.c:816
+ #, c-format
+-- 
+2.23.0
+
+
