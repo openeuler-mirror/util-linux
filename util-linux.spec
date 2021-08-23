@@ -2,7 +2,7 @@
 
 Name:           util-linux
 Version:        2.35.2
-Release:        8
+Release:        9
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -60,7 +60,7 @@ Patch21:        backpaort-update-fdisk-outputs-due-to-sizes-rounding-change.patc
 Patch6000:      backport-CVE-2021-37600.patch
 
 Patch9000:	Add-check-to-resolve-uname26-version-test-failed.patch
-
+Patch9001:      modify-rescuemode-chinese-error.patch
 %description
 The util-linux package contains a random collection of files that
 implements some low-level basic linux utilities.
@@ -407,6 +407,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Fri Aug 20 2021 zhangke <zhangkea@uniontech.com> - 2.35.2-9
+- Type:enhancement
+- Id:NA
+- SUG:NA
+- DESC:modify rescuemode chinese error
+
 * Tue Aug 10 2021 shixuantong<shixuantong@huawei.com> - 2.35.2-8
 - Type:CVE
 - ID:CVE-2021-37600
