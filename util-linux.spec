@@ -3,7 +3,7 @@
 
 Name:           util-linux
 Version:        2.36.1
-Release:        5
+Release:        6
 Summary:        A random collection of Linux utilities
 License:        GPLv2 and GPLv2+ and LGPLv2+ and BSD with advertising and Public Domain
 URL:            https://git.kernel.org/pub/scm/utils/util-linux/util-linux.git
@@ -42,6 +42,7 @@ Patch3:         backport-libmount-fix-tab-parser-for-badly-terminated-lines.patc
 Patch4:         backport-libblkid-improve-debug-for-proc-partitions.patch
 Patch5:         backport-libblkid-use-sys-to-read-all-block-devices.patch
 Patch6000:      backport-CVE-2021-37600.patch
+patch7000:      Do-not-excute-Flock-testcases.patch
 
 Patch9000:	Add-check-to-resolve-uname26-version-test-failed.patch
 
@@ -391,6 +392,12 @@ fi
 %{_mandir}/man8/{swapoff.8*,swapon.8*,switch_root.8*,umount.8*,wdctl.8.gz,wipefs.8*,zramctl.8*}
 
 %changelog
+* Fri Oct 29 2021 xinminst <xuzhiling19991120@163.com> - 2.36.1-6
+- Type:enhancement
+- ID:NA
+- SUG:NA
+- DESC:update Do-not-excute-Flock-testcases.patch
+
 * Tue Aug 10 2021 shixuantong<shixuantong@huawei.com> - 2.36.1-5
 - Type:CVE
 - ID:CVE-2021-37600
