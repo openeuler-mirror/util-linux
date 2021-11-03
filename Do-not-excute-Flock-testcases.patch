@@ -1,0 +1,26 @@
+From 44058eff4fa4f7b138734a58608562415a054aaa Mon Sep 17 00:00:00 2001
+From: =?UTF-8?q?=E8=AE=B8=E5=BF=97=E5=87=8C?= <xuzhiling19991120@163.com>
+Date: Fri, 29 Oct 2021 11:43:39 +0800
+Subject: Do-not-excute-Flock-testcases
+
+The compilation environment and test cases are vulnerable.As a result,the Flock testcase fail to be compiled.Therefore,the Flock testcases are commented out.
+---
+ tests/commands.sh | 2 +-
+ 1 file changed, 1 insertion(+), 1 deletion(-)
+
+diff --git a/tests/commands.sh b/tests/commands.sh
+index 5f34452..639f7ee 100644
+--- a/tests/commands.sh
++++ b/tests/commands.sh
+@@ -55,7 +55,7 @@ TS_CMD_COLUMN=${TS_CMD_COLUMN:-"${ts_commandsdir}column"}
+ TS_CMD_EJECT=${TS_CMD_EJECT-"${ts_commandsdir}eject"}
+ TS_CMD_FALLOCATE=${TS_CMD_FALLOCATE-"${ts_commandsdir}fallocate"}
+ TS_CMD_FDISK=${TS_CMD_FDISK-"${ts_commandsdir}fdisk"}
+-TS_CMD_FLOCK=${TS_CMD_FLOCK-"${ts_commandsdir}flock"}
++#TS_CMD_FLOCK=${TS_CMD_FLOCK-"${ts_commandsdir}flock"}
+ TS_CMD_SFDISK=${TS_CMD_SFDISK-"${ts_commandsdir}sfdisk"}
+ TS_CMD_FINCORE=${TS_CMD_FINCORE-"${ts_commandsdir}fincore"}
+ TS_CMD_FINDMNT=${TS_CMD_FINDMNT-"${ts_commandsdir}findmnt"}
+-- 
+2.32.0.windows.2
+
